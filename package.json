@@ -1,0 +1,28 @@
+{
+  "name": "jenngen",
+  "version": "0.0.0",
+  "description": "AI static site generator.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/thrashr888/jenngen.git"
+  },
+  "keywords": [
+    "ai",
+    "llm",
+    "static",
+    "generator"
+  ],
+  "author": "Paul Thrasher <thrashr888@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/thrashr888/jenngen/issues"
+  },
+  "homepage": "https://github.com/thrashr888/jenngen#readme",
+  "dependencies": {
+    "openai": "^4.20.1"
+  }
+}
