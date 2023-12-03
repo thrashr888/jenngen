@@ -1,0 +1,7 @@
+- use a node image
+- pass the OPENAI_API_KEY environment variable
+- copy the package.json file
+- copy the generated website to the nginx folder
+- use npx jenngen to generate the website
+- run a webserver to serve the website
+- expose the webserver on port 80

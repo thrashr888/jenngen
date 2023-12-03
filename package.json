@@ -2,7 +2,7 @@
   "name": "jenngen",
   "version": "0.0.0",
   "description": "AI static site generator.",
-  "main": "index.js",
+  "main": "index.mjs",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
