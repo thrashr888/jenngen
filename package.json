@@ -6,6 +6,7 @@
   "scripts": {
     "build": "node . website",
     "watch": "node . website --watch",
+    "server": "node . website --watch --server",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

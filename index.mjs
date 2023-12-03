@@ -1,12 +1,19 @@
 import chalk from "chalk";
+import connectLivereload from "connect-livereload";
 import crypto from "crypto";
+import express from "express";
 import { createWriteStream, watch } from "fs";
 import fs from "fs/promises";
+import livereload from "livereload";
 import OpenAI from "openai";
 import path from "path";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 
+const LIVERELOAD_PORT = 35729;
+const SERVER_PORT = 3000;
+const DIST_DIR = "dist";
+const INSTRUCTION_FILE = ".jenngen";
 const CACHE_DIR = ".jenngen/cache";
 
 const openai = new OpenAI();
@@ -28,6 +35,7 @@ Output File Specifications:
 - Implement dynamic content as needed using JavaScript script tags.
 - All output code should be functional and ready for website deployment.
 - Provide only the code output, without markdown or explanatory prose.
+- The resulting website should have a nice, high quality design, good styling, with a consistent look and feel across pages.
 
 User Instructions for the Website:
 <<<INSTRUCTIONS>>>
@@ -44,12 +52,11 @@ Real Code Output Examples:
 <<<OUTPUT>>>
 `;
 
-const USER_PROMPT = `Based on the provided pseudo-code, generate the corresponding code. Ensure the output is purely code, devoid of markdown or explanatory prose.
+const USER_PROMPT = `Based on the provided pseudo-code, generate the corresponding code. Ensure the output is purely the code results, devoid of wrapping markdown code blocks or explanatory prose.
 `;
 
-const FILE_PROMPT = `File: <<<FILENAME>>>
-Contents:
-<<<CONTENTS>>>`;
+const FILE_PROMPT = `FILE: <<<FILENAME>>>
+CONTENTS: <<<CONTENTS>>>`;
 
 function hashContent(content) {
   return crypto.createHash("sha256").update(content).digest("hex");
@@ -77,8 +84,8 @@ async function getFiles(folder) {
   const entries = await fs.readdir(folder, { withFileTypes: true });
   const files = await Promise.all(
     entries.map(async (entry) => {
-      if (entry.name === "dist") return null;
-      if (entry.name === ".jenngen") return null;
+      if (entry.name === DIST_DIR) return null;
+      if (entry.name === INSTRUCTION_FILE) return null;
       const path = `${folder}/${entry.name}`;
       if (entry.isDirectory()) {
         return getFiles(path); // Recursive call for directories
@@ -162,7 +169,7 @@ function applyExamples(prompt, examples) {
 async function generateCode(assistantPrompt, file) {
   if (!file) return;
   if (!(await hasFileChanged(file))) {
-    console.log(chalk.blue(`Skipping ${file.path}`));
+    // console.log(chalk.blue(`Skipping ${file.path}`));
     return;
   }
 
@@ -183,7 +190,7 @@ async function generateCode(assistantPrompt, file) {
     USER_PROMPT + userPrompt
   );
 
-  const distPath = file.path.replace("website", "dist");
+  const distPath = file.path.replace("website", DIST_DIR);
 
   // create folder if it doesn't exist
   await fs.mkdir(path.dirname(distPath), { recursive: true });
@@ -200,12 +207,36 @@ async function generateCode(assistantPrompt, file) {
   await updateCache(file);
 }
 
+async function startServer() {
+  const app = express();
+  app.use(connectLivereload({ port: LIVERELOAD_PORT }));
+  app.use(express.static(DIST_DIR));
+
+  app.listen(SERVER_PORT, () => {
+    console.log(chalk.green(`Serving at http://localhost:${SERVER_PORT}`));
+  });
+
+  const liveReloadServer = livereload.createServer({ port: LIVERELOAD_PORT });
+  liveReloadServer.watch(path.join(process.cwd(), DIST_DIR));
+
+  watch(DIST_DIR, { recursive: true }, (_, filename) => {
+    liveReloadServer.refresh(filename);
+    console.log(chalk.magenta(`Reloaded due to change in ${filename}`));
+  });
+}
+
 async function main() {
-  const argv = yargs(hideBin(process.argv)).option("watch", {
-    alias: "w",
-    type: "boolean",
-    description: "Watch for file changes",
-  }).argv;
+  const argv = yargs(hideBin(process.argv))
+    .option("watch", {
+      alias: "w",
+      type: "boolean",
+      description: "Watch for file changes",
+    })
+    .option("server", {
+      alias: "s",
+      type: "boolean",
+      description: "Serve files with live reload",
+    }).argv;
 
   const sourceFolder = path.join(process.cwd(), argv._[0] || "");
 
@@ -213,13 +244,14 @@ async function main() {
 
   let assistantPrompt = "";
   if (
-    (await fs.stat(path.join(sourceFolder, ".jenngen")).catch(() => false)) ===
-    false
+    (await fs
+      .stat(path.join(sourceFolder, INSTRUCTION_FILE))
+      .catch(() => false)) === false
   ) {
     assistantPrompt = ASSISTANT_PROMPT.replace("<<<INSTRUCTIONS>>>", "");
   } else {
     const instructions = await fs.readFile(
-      path.join(sourceFolder, ".jenngen"),
+      path.join(sourceFolder, INSTRUCTION_FILE),
       "utf-8"
     );
     assistantPrompt = ASSISTANT_PROMPT.replace(
@@ -230,36 +262,44 @@ async function main() {
 
   await fs.mkdir(CACHE_DIR, { recursive: true });
 
+  await build(sourceFolder, assistantPrompt);
+
+  if (argv.server) {
+    await startServer();
+  }
+
   if (argv.watch) {
-    console.log(chalk.green("Watching for changes..."));
     await watchForChanges(sourceFolder, assistantPrompt);
-  } else {
+  }
+}
+
+async function build(sourceFolder, assistantPrompt) {
+  try {
+    const files = await getFiles(sourceFolder);
+    assistantPrompt = assistantPrompt.replace(
+      "<<<FILES>>>",
+      files
+        .filter((f) => f)
+        .map((f) => f.name)
+        .join("\n")
+    );
+
     try {
-      const files = await getFiles(sourceFolder);
-      assistantPrompt = assistantPrompt.replace(
-        "<<<FILES>>>",
-        files
-          .filter((f) => f)
-          .map((f) => f.name)
-          .join("\n")
+      await Promise.all(
+        files.map((file) => generateCode(assistantPrompt, file))
       );
-
-      try {
-        await Promise.all(
-          files.map((file) => generateCode(assistantPrompt, file))
-        );
-      } catch (err) {
-        console.error(chalk.red("Generation failed"), err);
-      }
-
-      console.log(chalk.green("Done"));
     } catch (err) {
-      console.error(chalk.red("Error"), err);
+      console.error(chalk.red("Generation failed"), err);
     }
+
+    console.log(chalk.green("Filed generated"));
+  } catch (err) {
+    console.error(chalk.red("Error"), err);
   }
 }
 
 async function watchForChanges(sourceFolder, assistantPrompt) {
+  console.log(chalk.green("Watching for changes..."));
   watch(sourceFolder, { recursive: true }, async (_, filename) => {
     if (!filename) {
       return;
