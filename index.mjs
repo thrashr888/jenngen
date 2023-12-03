@@ -1,12 +1,18 @@
-import { createWriteStream } from "fs";
+import chalk from "chalk";
+import crypto from "crypto";
+import { createWriteStream, watch } from "fs";
 import fs from "fs/promises";
 import OpenAI from "openai";
 import path from "path";
+import yargs from "yargs";
+import { hideBin } from "yargs/helpers";
+
+const CACHE_DIR = ".jenngen/cache";
 
 const openai = new OpenAI();
 
 const ASSISTANT_PROMPT = `
-You are Jenngen, an AI static site generator. Your task is to transform given pseudo-code into high-quality, deployable code, matching the content and file name specifications.
+You are JennGen, an AI static site generator. Your task is to transform given pseudo-code or instructions into high-quality, deployable code, matching the content and file name specifications.
 
 Input File Contents:
 - The input may include mixed content types, like markdown with JavaScript, or prose with CSS.
@@ -45,19 +51,45 @@ const FILE_PROMPT = `File: <<<FILENAME>>>
 Contents:
 <<<CONTENTS>>>`;
 
+function hashContent(content) {
+  return crypto.createHash("sha256").update(content).digest("hex");
+}
+
+async function hasFileChanged(file) {
+  const hash = hashContent(file.content);
+  const cacheFilePath = path.join(CACHE_DIR, file.path.replace(/\//g, "_"));
+  try {
+    const storedHash = await fs.readFile(cacheFilePath, "utf-8");
+    return hash !== storedHash;
+  } catch (error) {
+    return true; // File not in cache or other error
+  }
+}
+
+async function updateCache(file) {
+  const hash = hashContent(file.content);
+  const cacheFilePath = path.join(CACHE_DIR, file.path.replace(/\//g, "_"));
+  await fs.writeFile(cacheFilePath, hash, "utf-8");
+}
+
 // Get a tree of files and folders, their names and contents
 async function getFiles(folder) {
-  const files = await fs.readdir(folder, { withFileTypes: true });
-  return Promise.all(
-    files.map(async (file) => {
-      if (file.name === "dist") return null;
-      if (file.name === ".jenngen") return null;
-
-      const path = `${folder}/${file.name}`;
-      const content = file.isFile() ? await fs.readFile(path, "utf-8") : null;
-      return { name: file.name, path, content };
+  const entries = await fs.readdir(folder, { withFileTypes: true });
+  const files = await Promise.all(
+    entries.map(async (entry) => {
+      if (entry.name === "dist") return null;
+      if (entry.name === ".jenngen") return null;
+      const path = `${folder}/${entry.name}`;
+      if (entry.isDirectory()) {
+        return getFiles(path); // Recursive call for directories
+      } else if (entry.isFile()) {
+        const content = await fs.readFile(path, "utf-8");
+        return { name: entry.name, path, content };
+      }
     })
   );
+
+  return files.flat().filter(Boolean); // Flatten and filter out null values
 }
 
 async function completion(assistant, prompt) {
@@ -68,6 +100,8 @@ async function completion(assistant, prompt) {
     ],
     model: "gpt-3.5-turbo",
     stream: true,
+    temperature: 0.5,
+    top_p: 1,
   });
 }
 
@@ -127,7 +161,12 @@ function applyExamples(prompt, examples) {
 
 async function generateCode(assistantPrompt, file) {
   if (!file) return;
-  console.log(`Generating ${file.path}`);
+  if (!(await hasFileChanged(file))) {
+    console.log(chalk.blue(`Skipping ${file.path}`));
+    return;
+  }
+
+  console.log(chalk.yellow(`Generating ${file.path}`));
 
   const fileExtension = file.path.split(".").pop();
   const examples = await getExamples(
@@ -145,6 +184,11 @@ async function generateCode(assistantPrompt, file) {
   );
 
   const distPath = file.path.replace("website", "dist");
+
+  // create folder if it doesn't exist
+  await fs.mkdir(path.dirname(distPath), { recursive: true });
+
+  await fs.writeFile(distPath, ""); // create empty file
   const fileStream = createWriteStream(distPath);
   for await (const chunk of completionStream) {
     if (typeof chunk.choices[0]?.delta?.content !== "string") continue;
@@ -152,11 +196,20 @@ async function generateCode(assistantPrompt, file) {
   }
   fileStream.end();
 
-  console.log(`Generated ${distPath}`);
+  console.log(chalk.green(`Generated ${distPath}`));
+  await updateCache(file);
 }
 
-async function main(sourceFolder) {
-  console.log(`Source folder: ${sourceFolder}`);
+async function main() {
+  const argv = yargs(hideBin(process.argv)).option("watch", {
+    alias: "w",
+    type: "boolean",
+    description: "Watch for file changes",
+  }).argv;
+
+  const sourceFolder = path.join(process.cwd(), argv._[0] || "");
+
+  console.log(chalk.magenta(`Source folder: ${sourceFolder}`));
 
   let assistantPrompt = "";
   if (
@@ -175,23 +228,68 @@ async function main(sourceFolder) {
     );
   }
 
-  const files = await getFiles(sourceFolder);
-  assistantPrompt = assistantPrompt.replace(
-    "<<<FILES>>>",
-    files
-      .filter((f) => f)
-      .map((f) => f.name)
-      .join("\n")
-  );
+  await fs.mkdir(CACHE_DIR, { recursive: true });
 
-  await Promise.all(files.map((file) => generateCode(assistantPrompt, file)));
+  if (argv.watch) {
+    console.log(chalk.green("Watching for changes..."));
+    await watchForChanges(sourceFolder, assistantPrompt);
+  } else {
+    try {
+      const files = await getFiles(sourceFolder);
+      assistantPrompt = assistantPrompt.replace(
+        "<<<FILES>>>",
+        files
+          .filter((f) => f)
+          .map((f) => f.name)
+          .join("\n")
+      );
 
-  console.log("Done");
+      try {
+        await Promise.all(
+          files.map((file) => generateCode(assistantPrompt, file))
+        );
+      } catch (err) {
+        console.error(chalk.red("Generation failed"), err);
+      }
+
+      console.log(chalk.green("Done"));
+    } catch (err) {
+      console.error(chalk.red("Error"), err);
+    }
+  }
+}
+
+async function watchForChanges(sourceFolder, assistantPrompt) {
+  watch(sourceFolder, { recursive: true }, async (_, filename) => {
+    if (!filename) {
+      return;
+    }
+
+    const filePath = path.join(sourceFolder, filename);
+
+    try {
+      const stats = await fs.stat(filePath);
+      if (!stats.isFile()) {
+        return;
+      }
+
+      const content = await fs.readFile(filePath, "utf-8");
+      const file = { name: filename, path: filePath, content };
+
+      // Check if the file has changed
+      if (await hasFileChanged(file)) {
+        await generateCode(assistantPrompt, file);
+      } else {
+        console.log(chalk.blue(`No changes in ${filename}`));
+      }
+    } catch (err) {
+      console.error(chalk.red(`Generation failed ${filename}: ${err}`));
+    }
+  });
 }
 
 try {
-  const source = path.join(process.cwd(), process.argv.pop() || "");
-  main(source);
+  main();
 } catch (err) {
-  console.error(err);
+  console.error(chalk.red("JennGen failed"), err);
 }

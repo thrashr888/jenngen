@@ -1,7 +1,10 @@
+# Makefile for deploying the website with Terraform
 
-target deploy:
-	@echo "Deploying website..."
-	@cd dist && terraform init && terraform apply -auto-approve
-	@echo "Deployed website!"
+deploy:
+	"Deploying website..."
+	cd dist
+	terraform init
+	terraform apply -auto-approve
+	"Deployed website!"
 
 default=deploy
