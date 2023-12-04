@@ -304,6 +304,7 @@ async function main() {
   }
 
   await fs.mkdir(CACHE_DIR, { recursive: true });
+  await fs.mkdir(DIST_DIR, { recursive: true });
 
   let liveReloadServer;
   if (argv.server) {
