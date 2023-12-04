@@ -1,6 +1,6 @@
 {
   "name": "jenngen",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "AI static site generator.",
   "main": "index.mjs",
   "scripts": {
@@ -8,6 +8,9 @@
     "watch": "node . website --watch",
     "server": "node . website --watch --server",
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bin": {
+    "jenngen": "./index.mjs"
   },
   "repository": {
     "type": "git",
