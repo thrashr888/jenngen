@@ -91,10 +91,9 @@ Dist file:
 
 ## TODO
 
-- [ ] Add quality examples for more languages and file formats
-- [ ] I'm pretty sure there's bugs with npx and the JennGen folders because the cwd confuses me
+- [ ] Add quality examples for more languages and file formats.
+- [ ] I'm pretty sure there's bugs with npx and the JennGen example folders because the cwd confuses me.
 - [ ] Add a way to serve the output folder without watching. I think we're double watching and reloading.
-- [ ] `npx jenngen` should output the help text
-- [ ] Use JennGen to generate a website for GitHub Pages
-- [ ] Record a demo video for the readme, website, and Twitter
+- [ ] Use JennGen to generate a website for its GitHub Pages.
+- [ ] Record a demo video for the readme, website, and Twitter.
 - [ ] Support website layouts. Maybe a `_layout.html` file?

@@ -181,7 +181,7 @@ async function generateCode(assistantPrompt, file, liveReloadServer = null) {
 
   const fileExtension = file.path.split(".").pop();
   const examples = await getExamples(
-    path.join(process.cwd(), "examples"),
+    path.join(__dirname, "examples"),
     fileExtension
   );
 
@@ -193,7 +193,7 @@ async function generateCode(assistantPrompt, file, liveReloadServer = null) {
     USER_PROMPT + userPrompt
   );
 
-  const distPath = file.path.replace("website", DIST_DIR);
+  const distPath = path.join(process.cwd(), DIST_DIR, file.path);
 
   // create folder if it doesn't exist
   await fs.mkdir(path.dirname(distPath), { recursive: true });
