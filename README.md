@@ -62,6 +62,8 @@ npx jenngen <input folder> [options]
 
 ## Examples
 
+<img width="940" alt="CleanShot 2023-12-04 at 09 21 35@2x" src="https://github.com/thrashr888/jenngen/assets/10213/fa726b3b-6045-4a07-8d1a-70f43074b721">
+
 See the [`website`](./website) folder for more examples.
 
 Your file:
