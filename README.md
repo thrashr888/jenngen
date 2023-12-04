@@ -1,18 +1,24 @@
 # JennGen
 
-AI static site generator. Given a folder of pseudocode, JennGen generates a folder of real code. Works best with HTML, CSS, and JavaScript, but it can translate any language or text-based file format.
+AI static site generator. Given a folder of pseudocode, JennGen generates a folder of real code. Works best with HTML, CSS, and JavaScript, but it can translate any language or text-based file format. For example, you can use a Markdown bullet list of instructions to generate a Dockerfile. Given good examples, you should be able to generate Terraform, Python, or JSON as-needed for functionality beyond a basic static site.
 
 ## Running it
 
+Get your OpenAI key from [https://beta.openai.com/](https://beta.openai.com/).
+
 Build it once:
 
-> export OPENAI_API_KEY=<YOUR_API_KEY>
-> npx jenngen .
+```
+export OPENAI_API_KEY=<YOUR_API_KEY>
+npx jenngen .
+```
 
 Build it continuously:
 
-> npx jenngen . --watch --server
-> open localhost:3000
+```
+npx jenngen . --watch --server
+open localhost:3000
+```
 
 ## How it works
 
@@ -70,3 +76,4 @@ Output file:
 - [ ] Add a way to serve the output folder
 - [ ] `npx jenngen` should output the help text
 - [ ] Use JennGen to generate a website for GitHub Pages
+- [ ] Record a demo video for the readme, website, and Twitter
