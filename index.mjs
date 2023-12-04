@@ -9,8 +9,12 @@ import fs from "fs/promises";
 import livereload from "livereload";
 import OpenAI from "openai";
 import path from "path";
+import { fileURLToPath } from "url";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const LIVERELOAD_PORT = process.env.JENNGEN_LIVERELOAD_PORT || 35729;
 const SERVER_PORT = process.env.JENNGEN_PORT || 3000;
