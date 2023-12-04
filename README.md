@@ -1,10 +1,10 @@
 # JennGen
 
-AI static site generator. Given a folder of pseudocode, JennGen generates a folder of real code. Works best with HTML, CSS, and JavaScript, but it can translate any language or text-based file format. For example, you can use a Markdown bullet list of instructions to generate a Dockerfile. Given good examples, you should be able to generate Terraform, Python, or JSON as-needed for functionality beyond a basic static site.
+AI static site generator. Given a folder of pseudocode, JennGen generates a folder of real code. It works best with HTML, CSS, and JavaScript, but it can translate any language or text-based file format. For example, you can use a Markdown bullet list of instructions to generate a Dockerfile. Given good examples, you should be able to generate Terraform, Python, or JSON as needed for functionality beyond a basic static site.
 
 ## Running it
 
-Get your OpenAI key from [https://beta.openai.com/](https://beta.openai.com/).
+Get your OpenAI key from [https://platform.openai.com/api-keys](https://platform.openai.com/api-keys).
 
 Build it once:
 
@@ -22,7 +22,7 @@ open localhost:3000
 
 ## How it works
 
-JennGen uses OpenAI's GPT4 to translate pseudocode into real code, using custom prompting and examples. You can add a `.jenngen` file to your project to provide further instructions.
+JennGen uses OpenAI's GPT4 to translate pseudocode into real code using custom prompting and examples. You can add a `.jenngen` file to your project to provide further instructions.
 
 ```
 <your project>
@@ -45,7 +45,7 @@ The `.jenngen` file is a plaintext file that contains instructions for JennGen. 
 ## CLI Options
 
 ```bash
-npx jenngen <input folder> [options]
+npx jenngen <source folder> [options]
 ```
 
 - `--watch` - watch for changes and rebuild
@@ -62,17 +62,13 @@ npx jenngen <input folder> [options]
 
 ## Examples
 
-<img width="940" alt="CleanShot 2023-12-04 at 09 21 35@2x" src="https://github.com/thrashr888/jenngen/assets/10213/fa726b3b-6045-4a07-8d1a-70f43074b721">
-
-See the [`website`](./website) folder for more examples.
-
-Your file:
+Your `index.html` file:
 
 ```
 hello world
 ```
 
-Dist file:
+The generated `index.html` file:
 
 ```html
 <!doctype html>
@@ -91,11 +87,41 @@ Dist file:
 </html>
 ```
 
+<img width="940" alt="CleanShot 2023-12-04 at 09 21 35@2x" src="https://github.com/thrashr888/jenngen/assets/10213/fa726b3b-6045-4a07-8d1a-70f43074b721">
+
+```
+"Welcome to the JennGen website!"
+{title}
+
+[beautiful hero section explaining the product]
+
+[insert high quality marketing content here]
+
+## Getting Started
+
+Using JennGen is easy. Just follow these steps:
+
+1. Get your OpenAI key from [https://beta.openai.com/](https://beta.openai.com/)
+2. Use npx to get jenngen and render the current folder: `npx jenngen .`
+3. Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+
+... insert more of a product story here ...
+
+[insert a centered cat picture here from placekitten.com]
+
+<time current>
+<sparkles animated="true" count="3">
+
+[footer with links to about, privacy, and terms]
+```
+
+See the [`website`](./website) folder for more examples.
+
 ## TODO
 
 - [ ] Add quality examples for more languages and file formats.
-- [ ] I'm pretty sure there's bugs with npx and the JennGen example folders because the cwd confuses me.
-- [ ] Add a way to serve the output folder without watching. I think we're double watching and reloading.
+- [ ] I'm pretty sure there are bugs with npx and the JennGen example folders because the cwd confuses me.
+- [ ] Add a way to serve the output folder without watching. I think we're double-watching and reloading.
 - [ ] Use JennGen to generate a website for its GitHub Pages.
 - [ ] Record a demo video for the readme, website, and Twitter.
 - [ ] Support website layouts. Maybe a `_layout.html` file?
