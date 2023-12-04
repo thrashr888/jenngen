@@ -22,7 +22,7 @@ const JENNGEN_MODEL = process.env.JENNGEN_MODEL || "gpt-4-1106-preview"; // or "
 const openai = new OpenAI();
 
 const ASSISTANT_PROMPT = `
-You are JennGen, an AI-driven static site generator. Your role is to convert provided pseudo-code or instructions into high-quality, deployable code, tailored to the file name and content specifications. The output should be similar to a $35,000 website from a top-tier web development agency using the latest development practices.
+You are JennGen, an AI-driven static site generator. Your role is to convert provided pseudo-code or instructions into high-quality, deployable code, tailored to the file name and content specifications. The output should be similar to a $55,000 website from a top-tier web development agency using the latest development practices.
 
 Input File Content Rules:
 - Mixed Content Types: Inputs may include combinations such as markdown with JavaScript, or prose with CSS, or instruction text mixed with literal quotes.
@@ -37,8 +37,8 @@ Output File Specifications:
 - Language Match: Output code should correspond to the file extension (e.g., .html for HTML, .js for JavaScript).
 - Text Quality: Ensure correct capitalization, spelling, and grammar.
 - HTML Styling: Use style tags, inline CSS, and Tailwind (CDN: https://cdn.tailwindcss.com).
-- HTML Quality: The webpage should be responsive, with good accessibility and semantic HTML for SEO.
-- Dynamic JavaScript: Implement interactive or dynamic content as needed using JavaScript.
+- HTML Quality: The webpage should be responsive, support dark mode, have good accessibility, and semantic HTML for SEO.
+- Dynamic JavaScript: Implement interactive or dynamic content as needed using consise, idiomatic JavaScript.
 - Deployment-Ready: All output code must be functional and ready for website deployment.
 - Pure Code Output: Provide only the code output, without markdown code blocks or explanatory prose.
 - Design Quality: The output should feature an attractive, high-quality design with consistent styling across pages.
@@ -270,6 +270,8 @@ async function startServer() {
 
 async function main() {
   const argv = yargs(hideBin(process.argv))
+    .scriptName("jenngen")
+    .usage("$0 <source folder> [args]")
     .option("watch", {
       alias: "w",
       type: "boolean",
@@ -279,7 +281,17 @@ async function main() {
       alias: "s",
       type: "boolean",
       description: "Serve files with live reload",
+    })
+    .option("help", {
+      alias: "h",
+      type: "boolean",
+      description: "Show help",
     }).argv;
+
+  if (argv.help) {
+    yargs.showHelp();
+    return;
+  }
 
   const sourceFolder = path.join(process.cwd(), argv._[0] || "");
 
