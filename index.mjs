@@ -12,9 +12,9 @@ import { hideBin } from "yargs/helpers";
 
 const LIVERELOAD_PORT = 35729;
 const SERVER_PORT = 3000;
-const DIST_DIR = "dist";
+const DIST_DIR = ".dist";
 const INSTRUCTION_FILE = ".jenngen";
-const CACHE_DIR = ".jenngen/cache";
+const CACHE_DIR = ".jenngen_cache";
 
 const openai = new OpenAI();
 
@@ -171,7 +171,6 @@ function applyExamples(prompt, examples) {
 async function generateCode(assistantPrompt, file, liveReloadServer = null) {
   if (!file) return;
   if (!(await hasFileChanged(file))) {
-    // console.log(chalk.blue(`Skipping ${file.path}`));
     return;
   }
 
@@ -184,7 +183,6 @@ async function generateCode(assistantPrompt, file, liveReloadServer = null) {
   );
 
   const renderedAssistantPrompt = applyExamples(assistantPrompt, examples);
-
   const userPrompt = applyFile(FILE_PROMPT, file.name, file.content);
 
   const completionStream = await completion(
@@ -210,6 +208,7 @@ async function generateCode(assistantPrompt, file, liveReloadServer = null) {
   for await (const chunk of completionStream) {
     if (typeof chunk.choices[0]?.delta?.content !== "string") continue;
 
+    // We need to buffer the output to remove the Markdown code blocks
     if (!isBufferProcessed) {
       buffer += chunk.choices[0].delta.content;
       if (buffer.length >= BUFFER_SIZE) {
@@ -365,7 +364,6 @@ async function watchForChanges(
       // Check if the file has changed
       if (await hasFileChanged(file)) {
         await generateCode(assistantPrompt, file, liveReloadServer);
-        // if (liveReloadServer) liveReloadServer.refresh();
       }
     } catch (err) {
       console.error(chalk.red(`Generation failed ${filename}: ${err}`));
