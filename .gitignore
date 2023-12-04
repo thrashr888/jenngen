@@ -7,26 +7,8 @@ yarn-error.log*
 lerna-debug.log*
 .pnpm-debug.log*
 
-# Runtime data
-pids
-*.pid
-*.seed
-*.pid.lock
-
-# Compiled binary addons (https://nodejs.org/api/addons.html)
-build/Release
-
 # Dependency directories
 node_modules/
-
-# Optional npm cache directory
-.npm
-
-# Optional eslint cache
-.eslintcache
-
-# Output of 'npm pack'
-*.tgz
 
 # dotenv environment variable files
 .env
@@ -35,5 +17,6 @@ node_modules/
 .env.production.local
 .env.local
 
-dist
-.jenngen/*
+# JennGen folders
+.dist
+.jenngen_cache

@@ -1,6 +1,6 @@
 {
   "name": "jenngen",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "AI static site generator.",
   "main": "index.mjs",
   "scripts": {
@@ -35,5 +35,8 @@
     "livereload": "^0.9.3",
     "openai": "^4.20.1",
     "yargs": "^17.7.2"
+  },
+  "require": {
+    "node": ">=16.0.0"
   }
 }

@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import chalk from "chalk";
 import connectLivereload from "connect-livereload";
 import crypto from "crypto";
@@ -10,11 +12,12 @@ import path from "path";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 
-const LIVERELOAD_PORT = 35729;
-const SERVER_PORT = 3000;
-const DIST_DIR = ".dist";
-const INSTRUCTION_FILE = ".jenngen";
-const CACHE_DIR = ".jenngen_cache";
+const LIVERELOAD_PORT = process.env.JENNGEN_LIVERELOAD_PORT || 35729;
+const SERVER_PORT = process.env.JENNGEN_PORT || 3000;
+const DIST_DIR = process.env.JENNGEN_DIST || ".dist";
+const INSTRUCTION_FILE = process.env.JENNGEN_INSTRUCTIONS || ".jenngen";
+const CACHE_DIR = process.env.JENNGEN_CACHE || ".jenngen_cache";
+const JENNGEN_MODEL = process.env.JENNGEN_MODEL || "gpt-4-1106-preview"; // or "gpt-3.5-turbo"
 
 const openai = new OpenAI();
 
@@ -87,6 +90,7 @@ async function getFiles(folder) {
     entries.map(async (entry) => {
       if (entry.name === DIST_DIR) return null;
       if (entry.name === INSTRUCTION_FILE) return null;
+      if (entry.name === "node_modules") return null;
       const path = `${folder}/${entry.name}`;
       if (entry.isDirectory()) {
         return getFiles(path); // Recursive call for directories
@@ -106,8 +110,7 @@ async function completion(assistant, prompt) {
       { role: "assistant", content: assistant },
       { role: "user", content: prompt },
     ],
-    // model: "gpt-3.5-turbo",
-    model: "gpt-4-1106-preview",
+    model: JENNGEN_MODEL,
     stream: true,
     temperature: 0.5,
     top_p: 1,
@@ -333,7 +336,7 @@ async function build(sourceFolder, assistantPrompt) {
       console.error(chalk.red("Generation failed"), err);
     }
 
-    console.log(chalk.green("Filed generated"));
+    console.log(chalk.green("Files generated"));
   } catch (err) {
     console.error(chalk.red("Error"), err);
   }

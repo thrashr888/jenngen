@@ -42,6 +42,24 @@ JennGen uses OpenAI's GPT4 to translate pseudocode into real code, using custom 
 
 The `.jenngen` file is a plaintext file that contains instructions for JennGen. It can be used to provide examples, add custom prompts, and more.
 
+## CLI Options
+
+```bash
+npx jenngen <input folder> [options]
+```
+
+- `--watch` - watch for changes and rebuild
+- `--server` - start a server to serve the output folder
+
+## Environment variables
+
+- JENNGEN_CACHE - cache folder (default: `.jenngen_cache`)
+- JENNGEN_DIST - output folder (default: `.dist`)
+- JENNGEN_INSTRUCTIONS - instructions file (default: `.jenngen`)
+- JENNGEN_LIVERELOAD_PORT - livereload port (default: `35729`)
+- JENNGEN_MODEL - OpenAI model (default: `gpt-4-1106-preview`)
+- JENNGEN_PORT - server port (default: `3000`)
+
 ## Examples
 
 See the [`website`](./website) folder for more examples.
