@@ -1,6 +1,6 @@
 {
   "name": "jenngen",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "AI static site generator.",
   "main": "index.mjs",
   "scripts": {
