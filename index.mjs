@@ -2,7 +2,7 @@
 
 import chalk from "chalk";
 import connectLivereload from "connect-livereload";
-import crypto from "crypto";
+import { createHash } from "crypto";
 import express from "express";
 import { createWriteStream, watch } from "fs";
 import fs from "fs/promises";
@@ -26,7 +26,7 @@ const JENNGEN_MODEL = process.env.JENNGEN_MODEL || "gpt-4-1106-preview"; // or "
 const openai = new OpenAI();
 
 const ASSISTANT_PROMPT = `
-You are JennGen, an AI-driven static site generator. Your role is to convert provided pseudo-code or instructions into high-quality, deployable code, tailored to the file name and content specifications. The output should be similar to a $55,000 website from a top-tier web development agency using the latest development practices.
+You are JennGen, an AI-driven static site generator. Your role is to convert provided pseudo-code or instructions into high-quality, deployable code, tailored to the file name and content specifications. The output should be similar to a $150,000 website from a top-tier web development agency using the latest development practices.
 
 Input File Content Rules:
 - Mixed Content Types: Inputs may include combinations such as markdown with JavaScript, or prose with CSS, or instruction text mixed with literal quotes.
@@ -36,6 +36,7 @@ Input File Content Rules:
 - Interactive Elements: Text within angle brackets (<>) should be replaced with interactive or real-time content. E.g., <Ask the user for their name> becomes a user input prompt for their name, and <clock with current time> becomes a live JavaScript clock showing the current time.
 - Professional Standard: All generated content should be professional-grade, appropriate for the file type, and devoid of any pseudo-code or placeholders.
 - No Filler Content: Avoid using "lorem ipsum", emojis, or similar filler material, unless explicitly requested.
+- If the input file looks complete, instead of like pseudo code, make it better.
 
 Output File Specifications:
 - Language Match: Output code should correspond to the file extension (e.g., .html for HTML, .js for JavaScript).
@@ -66,13 +67,13 @@ const USER_PROMPT = `Based on the provided pseudo-code, generate the correspondi
 const FILE_PROMPT = `FILE: <<<FILENAME>>>
 CONTENTS: <<<CONTENTS>>>`;
 
-function hashContent(content) {
-  return crypto.createHash("sha256").update(content).digest("hex");
-}
-
-async function hasFileChanged(file) {
-  const hash = hashContent(file.content);
-  const cacheFilePath = path.join(CACHE_DIR, file.path.replace(/\//g, "_"));
+async function hasFileChanged(sourceFolder, file) {
+  const hash = createHash("sha256").update(file.content).digest("hex");
+  const cacheFilePath = path.join(
+    sourceFolder,
+    CACHE_DIR,
+    file.path.replace(/\//g, "_")
+  );
   try {
     const storedHash = await fs.readFile(cacheFilePath, "utf-8");
     return hash !== storedHash;
@@ -81,9 +82,13 @@ async function hasFileChanged(file) {
   }
 }
 
-async function updateCache(file) {
-  const hash = hashContent(file.content);
-  const cacheFilePath = path.join(CACHE_DIR, file.path.replace(/\//g, "_"));
+async function updateCache(sourceFolder, file) {
+  const hash = createHash("sha256").update(file.content).digest("hex");
+  const cacheFilePath = path.join(
+    sourceFolder,
+    CACHE_DIR,
+    file.path.replace(/\//g, "_")
+  );
   await fs.writeFile(cacheFilePath, hash, "utf-8");
 }
 
@@ -93,8 +98,10 @@ async function getFiles(folder) {
   const files = await Promise.all(
     entries.map(async (entry) => {
       if (entry.name === DIST_DIR) return null;
+      if (entry.name === CACHE_DIR) return null;
       if (entry.name === INSTRUCTION_FILE) return null;
       if (entry.name === "node_modules") return null;
+
       const path = `${folder}/${entry.name}`;
       if (entry.isDirectory()) {
         return getFiles(path); // Recursive call for directories
@@ -175,9 +182,14 @@ function applyExamples(prompt, examples) {
     .replace("<<<OUTPUT>>>", outputs.join("\n"));
 }
 
-async function generateCode(assistantPrompt, file, liveReloadServer = null) {
+async function generateCode(
+  sourceFolder,
+  assistantPrompt,
+  file,
+  liveReloadServer = null
+) {
   if (!file) return;
-  if (!(await hasFileChanged(file))) {
+  if (!(await hasFileChanged(sourceFolder, file))) {
     return;
   }
 
@@ -197,7 +209,8 @@ async function generateCode(assistantPrompt, file, liveReloadServer = null) {
     USER_PROMPT + userPrompt
   );
 
-  const distPath = path.join(process.cwd(), DIST_DIR, file.path);
+  const relativeFilePath = path.relative(sourceFolder, file.path);
+  const distPath = path.join(sourceFolder, DIST_DIR, relativeFilePath);
 
   // create folder if it doesn't exist
   await fs.mkdir(path.dirname(distPath), { recursive: true });
@@ -249,25 +262,29 @@ async function generateCode(assistantPrompt, file, liveReloadServer = null) {
   liveReloadServer?.refresh();
 
   console.log(chalk.green(`Generated ${distPath}`));
-  await updateCache(file);
+  await updateCache(sourceFolder, file);
 }
 
-async function startServer() {
+async function startServer(sourceFolder) {
   const app = express();
   app.use(connectLivereload({ port: LIVERELOAD_PORT }));
-  app.use(express.static(DIST_DIR));
+  app.use(express.static(path.join(sourceFolder, DIST_DIR)));
 
   app.listen(SERVER_PORT, () => {
     console.log(chalk.green(`Serving at http://localhost:${SERVER_PORT}`));
   });
 
   const liveReloadServer = livereload.createServer({ port: LIVERELOAD_PORT });
-  liveReloadServer.watch(path.join(process.cwd(), DIST_DIR));
+  liveReloadServer.watch(path.join(sourceFolder, DIST_DIR));
 
-  watch(DIST_DIR, { recursive: true, persistent: true }, (_, filename) => {
-    liveReloadServer.refresh(filename);
-    console.log(chalk.magenta(`Reloaded due to change in ${filename}`));
-  });
+  watch(
+    path.join(sourceFolder, DIST_DIR),
+    { recursive: true, persistent: true },
+    (_, filename) => {
+      liveReloadServer.refresh(filename);
+      console.log(chalk.magenta(`Reloaded due to change in ${filename}`));
+    }
+  );
 
   return [app, liveReloadServer];
 }
@@ -299,6 +316,11 @@ async function main() {
 
   const sourceFolder = path.join(process.cwd(), argv._[0] || "");
 
+  const distFolder = path.join(sourceFolder, DIST_DIR);
+  await fs.mkdir(distFolder, { recursive: true });
+  const cacheFolder = path.join(sourceFolder, CACHE_DIR);
+  await fs.mkdir(cacheFolder, { recursive: true });
+
   console.log(chalk.magenta(`Source folder: ${sourceFolder}`));
 
   let assistantPrompt = "";
@@ -319,12 +341,9 @@ async function main() {
     );
   }
 
-  await fs.mkdir(CACHE_DIR, { recursive: true });
-  await fs.mkdir(DIST_DIR, { recursive: true });
-
   let liveReloadServer;
   if (argv.server) {
-    const [app, liveReloadServer] = await startServer();
+    const [app, liveReloadServer] = await startServer(sourceFolder);
   }
 
   await build(sourceFolder, assistantPrompt);
@@ -347,7 +366,7 @@ async function build(sourceFolder, assistantPrompt) {
 
     try {
       await Promise.all(
-        files.map((file) => generateCode(assistantPrompt, file))
+        files.map((file) => generateCode(sourceFolder, assistantPrompt, file))
       );
     } catch (err) {
       console.error(chalk.red("Generation failed"), err);
@@ -383,7 +402,12 @@ async function watchForChanges(
 
       // Check if the file has changed
       if (await hasFileChanged(file)) {
-        await generateCode(assistantPrompt, file, liveReloadServer);
+        await generateCode(
+          sourceFolder,
+          assistantPrompt,
+          file,
+          liveReloadServer
+        );
       }
     } catch (err) {
       console.error(chalk.red(`Generation failed ${filename}: ${err}`));
