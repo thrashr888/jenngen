@@ -20,6 +20,19 @@ npx jenngen . --watch --server
 open localhost:3000
 ```
 
+## Local models with Ollama
+
+You can use a local model with Ollama. This is useful if you want to use an open source model that is not available on OpenAI's API. You can also use it to avoid the API rate limits. See the [Ollama model library](https://ollama.ai/library) for the list of available models.
+
+```
+brew install ollama
+brew services start ollama
+ollama pull mistral
+export JENNGEN_OLLAMA_MODEL=mistral
+npx jenngen . --server
+http://localhost:3000
+```
+
 ## How it works
 
 JennGen uses OpenAI's GPT4 to translate pseudocode into real code using custom prompting and examples. You can add a `.jenngen` file to your project to provide further instructions.
@@ -53,12 +66,14 @@ npx jenngen <source folder> [options]
 
 ## Environment variables
 
+- OPENAI_API_KEY - OpenAI API key (default: `null`)
 - JENNGEN_CACHE - cache folder (default: `.jenngen_cache`)
 - JENNGEN_DIST - output folder (default: `.dist`)
 - JENNGEN_INSTRUCTIONS - instructions file (default: `.jenngen`)
 - JENNGEN_LIVERELOAD_PORT - livereload port (default: `35729`)
 - JENNGEN_MODEL - OpenAI model (default: `gpt-4-1106-preview`)
 - JENNGEN_PORT - server port (default: `3000`)
+- JENNGEN_OLLAMA_MODEL - Use a local Ollama model; overrides OPENAI_API_KEY (default: `null`)
 
 ## Examples
 

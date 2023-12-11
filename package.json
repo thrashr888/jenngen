@@ -1,7 +1,7 @@
 {
   "name": "jenngen",
-  "version": "0.0.7",
-  "description": "AI static site generator.",
+  "version": "0.0.8",
+  "description": "AI static site generator: $ npx jenngen .",
   "main": "index.mjs",
   "scripts": {
     "build": "node . website",
@@ -33,6 +33,7 @@
     "connect-livereload": "^0.6.1",
     "express": "^4.18.2",
     "livereload": "^0.9.3",
+    "modelfusion": "^0.95.0",
     "openai": "^4.20.1",
     "yargs": "^17.7.2"
   },

@@ -7,6 +7,7 @@ import express from "express";
 import { createWriteStream, watch } from "fs";
 import fs from "fs/promises";
 import livereload from "livereload";
+import { ollama, streamText } from "modelfusion";
 import OpenAI from "openai";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -22,6 +23,7 @@ const DIST_DIR = process.env.JENNGEN_DIST || ".dist";
 const INSTRUCTION_FILE = process.env.JENNGEN_INSTRUCTIONS || ".jenngen";
 const CACHE_DIR = process.env.JENNGEN_CACHE || ".jenngen_cache";
 const JENNGEN_MODEL = process.env.JENNGEN_MODEL || "gpt-4-1106-preview"; // or "gpt-3.5-turbo"
+const JENNGEN_OLLAMA_MODEL = process.env.JENNGEN_OLLAMA_MODEL || "zephyr";
 
 const openai = new OpenAI();
 
@@ -31,7 +33,7 @@ You are JennGen, an AI-driven static site generator. Your role is to convert pro
 Input File Content Rules:
 - Mixed Content Types: Inputs may include combinations such as markdown with JavaScript, or prose with CSS, or instruction text mixed with literal quotes.
 - Literal Text: Text within double quotes ("") should be used exactly as is. For instance, "This is my description" translates directly into "This is my description".
-- Dynamic Placeholders: Text within curly braces ({}) represents dynamic variables. Replace {title} with the actual title of the page.
+- Dynamic Placeholders: Text within curly braces ({}) represents dynamic variables. Replace {title} with the actual title of the page or other relevant content.
 - Instructional Text: Text within square brackets ([]) contains instructions to generate specific content. For example, [Insert a random number] should be replaced with an actual random number, and [Insert marketing copy here] should be replaced with professional marketing content.
 - Interactive Elements: Text within angle brackets (<>) should be replaced with interactive or real-time content. E.g., <Ask the user for their name> becomes a user input prompt for their name, and <clock with current time> becomes a live JavaScript clock showing the current time.
 - Professional Standard: All generated content should be professional-grade, appropriate for the file type, and devoid of any pseudo-code or placeholders.
@@ -68,7 +70,9 @@ const FILE_PROMPT = `FILE: <<<FILENAME>>>
 CONTENTS: <<<CONTENTS>>>`;
 
 async function hasFileChanged(sourceFolder, file) {
-  const hash = createHash("sha256").update(file.content).digest("hex");
+  const hash = createHash("sha256")
+    .update(JENNGEN_MODEL + JENNGEN_OLLAMA_MODEL + file.content)
+    .digest("hex");
   const cacheFilePath = path.join(
     sourceFolder,
     CACHE_DIR,
@@ -83,7 +87,9 @@ async function hasFileChanged(sourceFolder, file) {
 }
 
 async function updateCache(sourceFolder, file) {
-  const hash = createHash("sha256").update(file.content).digest("hex");
+  const hash = createHash("sha256")
+    .update(JENNGEN_MODEL + JENNGEN_OLLAMA_MODEL + file.content)
+    .digest("hex");
   const cacheFilePath = path.join(
     sourceFolder,
     CACHE_DIR,
@@ -116,6 +122,18 @@ async function getFiles(folder) {
 }
 
 async function completion(assistant, prompt) {
+  if (JENNGEN_OLLAMA_MODEL) {
+    return await streamText(
+      ollama.TextGenerator({
+        model: JENNGEN_OLLAMA_MODEL,
+        temperature: 0.5,
+        top_p: 1,
+        system: assistant,
+      }),
+      prompt
+    );
+  }
+
   return await openai.chat.completions.create({
     messages: [
       { role: "assistant", content: assistant },
@@ -226,11 +244,17 @@ async function generateCode(
 
   const fileStream = createWriteStream(distPath);
   for await (const chunk of completionStream) {
-    if (typeof chunk.choices[0]?.delta?.content !== "string") continue;
+    // ollama returns a string, but OpenAI returns an object
+    let content = JENNGEN_OLLAMA_MODEL
+      ? chunk
+      : chunk.choices[0]?.delta?.content;
+
+    // console.log(content);
+    if (typeof content !== "string") continue;
 
     // We need to buffer the output to remove the Markdown code blocks
     if (!isBufferProcessed) {
-      buffer += chunk.choices[0].delta.content;
+      buffer += content;
       if (buffer.length >= BUFFER_SIZE) {
         // Process buffer and write to file
         const match = buffer.match(CODE_BLOCK_REGEX);
@@ -242,7 +266,7 @@ async function generateCode(
         isBufferProcessed = true;
       }
     } else {
-      endBuffer += chunk.choices[0].delta.content;
+      endBuffer += content;
       if (endBuffer.length > END_BUFFER_SIZE) {
         // Write to file except for the last part reserved in endBuffer
         fileStream.write(
@@ -265,7 +289,7 @@ async function generateCode(
   await updateCache(sourceFolder, file);
 }
 
-async function startServer(sourceFolder) {
+async function startServer(sourceFolder, watchFlag = false) {
   const app = express();
   app.use(connectLivereload({ port: LIVERELOAD_PORT }));
   app.use(express.static(path.join(sourceFolder, DIST_DIR)));
@@ -274,6 +298,8 @@ async function startServer(sourceFolder) {
     console.log(chalk.green(`Serving at http://localhost:${SERVER_PORT}`));
   });
 
+  if (!watchFlag) return [app, null];
+
   const liveReloadServer = livereload.createServer({ port: LIVERELOAD_PORT });
   liveReloadServer.watch(path.join(sourceFolder, DIST_DIR));
 
@@ -281,6 +307,9 @@ async function startServer(sourceFolder) {
     path.join(sourceFolder, DIST_DIR),
     { recursive: true, persistent: true },
     (_, filename) => {
+      if (filename.includes(CACHE_DIR)) return;
+      if (filename.includes(DIST_DIR)) return;
+
       liveReloadServer.refresh(filename);
       console.log(chalk.magenta(`Reloaded due to change in ${filename}`));
     }
@@ -343,7 +372,7 @@ async function main() {
 
   let liveReloadServer;
   if (argv.server) {
-    const [app, liveReloadServer] = await startServer(sourceFolder);
+    [, liveReloadServer] = await startServer(sourceFolder, argv.watch);
   }
 
   await build(sourceFolder, assistantPrompt);
@@ -386,6 +415,12 @@ async function watchForChanges(
   console.log(chalk.green("Watching for changes..."));
   watch(sourceFolder, { recursive: true }, async (_, filename) => {
     if (!filename) {
+      return;
+    }
+    if (filename.includes(DIST_DIR)) {
+      return;
+    }
+    if (filename.includes(CACHE_DIR)) {
       return;
     }
 
