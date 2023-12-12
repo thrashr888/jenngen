@@ -23,7 +23,7 @@ const DIST_DIR = process.env.JENNGEN_DIST || ".dist";
 const INSTRUCTION_FILE = process.env.JENNGEN_INSTRUCTIONS || ".jenngen";
 const CACHE_DIR = process.env.JENNGEN_CACHE || ".jenngen_cache";
 const JENNGEN_MODEL = process.env.JENNGEN_MODEL || "gpt-4-1106-preview"; // or "gpt-3.5-turbo"
-const JENNGEN_OLLAMA_MODEL = process.env.JENNGEN_OLLAMA_MODEL || "zephyr";
+const JENNGEN_OLLAMA_MODEL = process.env.JENNGEN_OLLAMA_MODEL || null;
 
 const openai = new OpenAI();
 
