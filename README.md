@@ -77,6 +77,8 @@ npx jenngen <source folder> [options]
 
 ## Examples
 
+The [`./website`](./website) folder is generated and deployed to https://thrashr888.github.io/jenngen/.
+
 Your `index.html` file:
 
 ```
@@ -130,13 +132,13 @@ Using JennGen is easy. Just follow these steps:
 [footer with links to about, privacy, and terms]
 ```
 
-See the [`website`](./website) folder for more examples.
+See the [`./website`](./website) folder and https://thrashr888.github.io/jenngen/ for more examples.
 
 ## TODO
 
 - [ ] Add quality examples for more languages and file formats.
 - [x] I'm pretty sure there are bugs with npx and the JennGen example folders because the cwd confuses me.
 - [ ] Add a way to serve the output folder without watching. I think we're double-watching and reloading.
-- [ ] Use JennGen to generate a website for its GitHub Pages.
+- [x] Use JennGen to generate a website for its GitHub Pages.
 - [ ] Record a demo video for the readme, website, and Twitter.
 - [ ] Support website layouts. Maybe a `_layout.html` file?
