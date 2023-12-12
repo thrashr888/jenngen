@@ -135,7 +135,7 @@ See the [`website`](./website) folder for more examples.
 ## TODO
 
 - [ ] Add quality examples for more languages and file formats.
-- [ ] I'm pretty sure there are bugs with npx and the JennGen example folders because the cwd confuses me.
+- [x] I'm pretty sure there are bugs with npx and the JennGen example folders because the cwd confuses me.
 - [ ] Add a way to serve the output folder without watching. I think we're double-watching and reloading.
 - [ ] Use JennGen to generate a website for its GitHub Pages.
 - [ ] Record a demo video for the readme, website, and Twitter.
