@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JennGen - The AI Static Site Generator</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .hero-bg {
+      background-color: #007bff;
+      color: white;
+    }
+    .footer-links a {
+      margin-right: 1rem;
+    }
+    .footer-links a:last-child {
+      margin-right: 0;
+    }
+  </style>
+</head>
+<body class="flex flex-col min-h-screen">
+  <header class="hero-bg text-center py-16">
+    <h1 class="text-4xl font-bold">Welcome to the JennGen website!</h1>
+    <p class="text-xl mt-4">The ultimate AI-driven static site generator</p>
+  </header>
+  
+  <section class="my-8 px-6">
+    <div class="max-w-4xl mx-auto">
+      <h2 class="text-3xl font-bold text-center">Revolutionize Your Web Development</h2>
+      <p class="text-lg mt-4">JennGen is designed to streamline your web development process, transforming your ideas into high-quality, deployable code with the power of AI. Say goodbye to mundane coding tasks and hello to creativity and efficiency.</p>
+    </div>
+  </section>
+  
+  <section class="bg-gray-100 py-8">
+    <div class="max-w-4xl mx-auto">
+      <h2 class="text-2xl font-bold">Getting Started</h2>
+      <p class="mt-4">Using JennGen is easy. Just follow these steps:</p>
+      <ol class="list-decimal list-inside">
+        <li>Get your OpenAI key from <a href="https://platform.openai.com/api-keys" class="text-blue-500">https://platform.openai.com/api-keys</a></li>
+        <li>Use npx to get jenngen and render the current folder: <code>npx jenngen .</code></li>
+        <li>Open <a href="http://localhost:3000" class="text-blue-500">http://localhost:3000</a> to view it in the browser.</li>
+      </ol>
+      <p class="mt-4">Explore the endless possibilities with JennGen and take your web projects to new heights!</p>
+    </div>
+  </section>
+  
+  <section class="my-8 px-6 text-center">
+    <img src="https://placekitten.com/400/300" alt="Cute Kitten" class="mx-auto rounded-lg shadow-lg" />
+    <script>
+      function updateCurrentTime() {
+        document.getElementById('current-time').textContent = new Date().toLocaleTimeString();
+      }
+      setInterval(updateCurrentTime, 1000);
+    </script>
+    <p id="current-time" class="text-lg font-semibold mt-4"></p>
+    <div id="sparkles"></div>
+    <script>
+      const sparklesContainer = document.getElementById('sparkles');
+      for (let i = 0; i < 3; i++) {
+        const sparkle = document.createElement('span');
+        sparkle.textContent = '✨';
+        sparkle.style.animation = `sparkle ${Math.random() * 2 + 1}s linear infinite`;
+        sparklesContainer.appendChild(sparkle);
+      }
+    </script>
+  </section>
+  
+  <footer class="mt-auto bg-gray-800 text-white py-4">
+    <div class="footer-links text-center">
+      <a href="about.html" class="hover:underline">About</a>
+      <a href="privacy.html" class="hover:underline">Privacy</a>
+      <a href="terms.html" class="hover:underline">Terms</a>
+    </div>
+    <p class="text-center text-sm mt-2">© 2023 JennGen by Paul Thrasher. All rights reserved.</p>
+  </footer>
+</body>
+</html>
