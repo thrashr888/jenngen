@@ -5,38 +5,74 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Terms of Service - JennGen</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background-color: #f0f4f8;
+        }
+        .menu-bar,
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            list-style-type: none;
+            padding: 0;
+        }
+        .menu-bar li,
+        .footer-links li {
+            margin: 0 10px;
+        }
+        a {
+            text-decoration: none;
+            color: #007acc;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .terms-content {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .terms-content h2 {
+            color: #007acc;
+        }
+    </style>
 </head>
-<body class="bg-white dark:bg-gray-800">
-    <nav class="bg-blue-500 p-4 text-white">
-        <ul class="flex justify-center space-x-4">
-            <li><a href="index.html" class="hover:underline">Home</a></li>
-            <li><a href="about.html" class="hover:underline">About</a></li>
-            <li><a href="privacy.html" class="hover:underline">Privacy</a></li>
-            <li><a href="terms.html" class="hover:underline">Terms</a></li>
+<body>
+    <nav>
+        <ul class="menu-bar">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="privacy.html">Privacy</a></li>
+            <li><a href="terms.html">Terms</a></li>
         </ul>
     </nav>
 
-    <main class="container mx-auto my-8 p-4">
-        <h1 class="text-3xl font-bold mb-4">Terms of Service</h1>
-        <section class="prose dark:prose-dark">
-            <p>Welcome to JennGen! These terms and conditions outline the rules and regulations for the use of JennGen's Website, located at jenngen.ai.</p>
-            <p>By accessing this website we assume you accept these terms and conditions. Do not continue to use JennGen if you do not agree to take all of the terms and conditions stated on this page.</p>
-            <h2>License</h2>
-            <p>Unless otherwise stated, JennGen and/or its licensors own the intellectual property rights for all material on JennGen. All intellectual property rights are reserved. You may access this from JennGen for your own personal use subjected to restrictions set in these terms and conditions.</p>
-            <h2>User Comments</h2>
-            <p>This Agreement shall begin on the date hereof. Parts of this website offer an opportunity for users to post and exchange opinions and information in certain areas of the website. JennGen does not filter, edit, publish or review Comments prior to their presence on the website. Comments do not reflect the views and opinions of JennGen, its agents and/or affiliates.</p>
-            <!-- Additional terms content would go here -->
-        </section>
+    <main class="terms-content">
+        <h2>Terms of Service</h2>
+        <p>Welcome to JennGen! By accessing our website and using our services, you agree to be bound by the following terms and conditions. Please read them carefully.</p>
+        <h3>Usage License</h3>
+        <p>Subject to your compliance with these terms, JennGen grants you a non-exclusive, non-transferable, revocable license to use the website and its services for your personal and non-commercial use.</p>
+        <h3>Content Ownership</h3>
+        <p>All content provided on JennGen, including text, graphics, logos, and software, is the property of JennGen or its content suppliers and protected by intellectual property laws.</p>
+        <h3>Disclaimers</h3>
+        <p>JennGen is provided "as is" without any warranties, expressed or implied. We do not guarantee that the website will be error-free or uninterrupted.</p>
+        <h3>Limitation of Liability</h3>
+        <p>In no event shall JennGen be liable for any indirect, incidental, special, or consequential damages arising out of or in connection with your use of the website or services.</p>
+        <h3>Changes to Terms</h3>
+        <p>We reserve the right to modify these terms at any time. Your continued use of the website after such changes indicates your acceptance of the new terms.</p>
     </main>
 
-    <footer class="bg-blue-500 p-4 text-white">
-        <ul class="flex justify-center space-x-4">
-            <li><a href="index.html" class="hover:underline">Home</a></li>
-            <li><a href="about.html" class="hover:underline">About</a></li>
-            <li><a href="privacy.html" class="hover:underline">Privacy</a></li>
-            <li><a href="terms.html" class="hover:underline">Terms</a></li>
+    <footer>
+        <ul class="footer-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="privacy.html">Privacy</a></li>
+            <li><a href="terms.html">Terms</a></li>
         </ul>
-        <p class="text-center mt-4">Copyright © 2023 Paul Thrasher</p>
+        <p>&copy; 2023 Paul Thrasher</p>
     </footer>
 </body>
 </html>
