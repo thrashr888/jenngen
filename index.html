@@ -3,70 +3,88 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Welcome to the JennGen website!</title>
+  <title>JennGen - The AI Static Site Generator</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     .hero {
-      background-color: #007acc;
+      background-color: #007bff;
       color: white;
-      padding: 4rem;
+      padding: 4rem 0;
       text-align: center;
     }
-    .footer-links {
-      display: flex;
-      justify-content: center;
-      gap: 1rem;
-      padding: 1rem;
-      background-color: #f3f4f6;
+    .footer-links a {
+      margin-right: 1rem;
+    }
+    .footer-links a:last-child {
+      margin-right: 0;
+    }
+    .cat-picture {
+      display: block;
+      margin: 2rem auto;
     }
   </style>
 </head>
-<body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
-  <div class="hero">
-    <h1 class="text-5xl font-bold">Welcome to the JennGen website!</h1>
-    <p class="text-xl mt-4">The future of static site generation, powered by AI.</p>
-  </div>
-  
-  <section class="my-12 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-    <h2 class="text-3xl font-bold text-center">Transform your content into a high-quality, deployable website with JennGen.</h2>
-    <p class="mt-4 text-lg">JennGen is an advanced static site generator that leverages the power of AI to create stunning websites with ease. Whether you're a developer looking to streamline your workflow or a business owner in need of a professional web presence, JennGen has got you covered.</p>
-  </section>
-  
-  <section class="my-12 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-    <h2 class="text-3xl font-bold">Getting Started</h2>
-    <ol class="list-decimal ml-8 mt-4">
-      <li>Get your OpenAI key from <a href="https://platform.openai.com/api-keys" class="text-blue-500 hover:underline">https://platform.openai.com/api-keys</a></li>
-      <li>Use npx to get JennGen and render the current folder: <code class="bg-gray-200 rounded p-1">npx jenngen .</code></li>
-      <li>Open <a href="http://localhost:3000" class="text-blue-500 hover:underline">http://localhost:3000</a> to view it in the browser.</li>
+<body class="bg-gray-100 dark:bg-gray-800">
+  <header class="hero">
+    <h1 class="text-4xl font-bold">Welcome to the JennGen website!</h1>
+    <p class="text-xl mt-4">The AI-driven static site generator for high-quality web development.</p>
+  </header>
+
+  <section class="my-8 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <h2 class="text-3xl font-bold text-center">Getting Started</h2>
+    <ol class="list-decimal list-inside my-4">
+      <li>Get your OpenAI key from <a href="https://platform.openai.com/api-keys" class="text-blue-600">https://platform.openai.com/api-keys</a></li>
+      <li>Use npx to get JennGen and render the current folder: <code>npx jenngen .</code></li>
+      <li>Open <a href="http://localhost:3000" class="text-blue-600">http://localhost:3000</a> to view it in the browser.</li>
     </ol>
-    <p class="mt-4">Discover the simplicity of creating a website with JennGen and take your project to the next level.</p>
+    <p class="my-4">JennGen simplifies the process of creating static sites by leveraging the power of AI. It's perfect for developers who value efficiency and quality in their web projects.</p>
   </section>
-  
-  <section class="my-12 text-center">
-    <img src="https://placekitten.com/400/300" alt="Cute kitten" class="mx-auto rounded-lg shadow-lg">
-  </section>
-  
-  <footer class="footer-links">
-    <script>
-      document.write(new Date().getFullYear());
-    </script>
-    <a href="about.html" class="text-blue-500 hover:underline">About</a>
-    <a href="privacy.html" class="text-blue-500 hover:underline">Privacy</a>
-    <a href="terms.html" class="text-blue-500 hover:underline">Terms</a>
+
+  <img src="https://placekitten.com/400/300" alt="Random Kitten" class="cat-picture">
+
+  <footer class="bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white py-4">
+    <div class="footer-links text-center">
+      <a href="about.html" class="hover:underline">About</a>
+      <a href="privacy.html" class="hover:underline">Privacy</a>
+      <a href="terms.html" class="hover:underline">Terms</a>
+    </div>
+    <p class="text-center text-sm mt-2">© 2023 JennGen. All rights reserved.</p>
   </footer>
-  
+
   <script>
-    // JavaScript for animated sparkles
-    const sparkleContainer = document.createElement('div');
-    sparkleContainer.classList.add('absolute', 'inset-0', 'flex', 'justify-center', 'items-center');
-    document.body.appendChild(sparkleContainer);
-    
-    for (let i = 0; i < 3; i++) {
-      const sparkle = document.createElement('span');
-      sparkle.classList.add('animate-ping', 'absolute', 'h-3', 'w-3', 'rounded-full', 'bg-white', 'opacity-75');
-      sparkle.style.animationDelay = `${i * 300}ms`;
-      sparkleContainer.appendChild(sparkle);
+    // Function to update the time every second
+    function updateTime() {
+      document.getElementById('current-time').innerText = new Date().toLocaleTimeString();
+      setTimeout(updateTime, 1000);
     }
+
+    // Add sparkles animation
+    function addSparkles(count) {
+      for (let i = 0; i < count; i++) {
+        const sparkle = document.createElement('div');
+        sparkle.className = 'sparkle';
+        sparkle.style.position = 'absolute';
+        sparkle.style.left = `${Math.random() * 100}%`;
+        sparkle.style.top = `${Math.random() * 100}%`;
+        sparkle.style.width = '5px';
+        sparkle.style.height = '5px';
+        sparkle.style.background = 'white';
+        sparkle.style.borderRadius = '50%';
+        sparkle.style.animation = 'sparkle-animation 1s infinite';
+        document.body.appendChild(sparkle);
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      updateTime();
+      addSparkles(3);
+    });
   </script>
+  <style>
+    @keyframes sparkle-animation {
+      0%, 100% { opacity: 0; }
+      50% { opacity: 1; }
+    }
+  </style>
 </body>
 </html>

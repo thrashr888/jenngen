@@ -1,78 +1,59 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Terms of Service - JennGen</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        body {
-            background-color: #f0f4f8;
-        }
-        .menu-bar,
-        .footer-links {
-            display: flex;
-            justify-content: center;
-            list-style-type: none;
-            padding: 0;
-        }
-        .menu-bar li,
-        .footer-links li {
-            margin: 0 10px;
-        }
-        a {
-            text-decoration: none;
-            color: #007acc;
-        }
-        a:hover {
-            text-decoration: underline;
-        }
-        .terms-content {
-            max-width: 800px;
-            margin: 20px auto;
-            padding: 20px;
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-        .terms-content h2 {
-            color: #007acc;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Terms of Service - JennGen</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .dark-mode { background-color: #1a202c; color: white; }
+    a { color: #2563eb; }
+    footer { padding-top: 50px; border-top: 1px solid #e2e8f0; }
+  </style>
 </head>
-<body>
-    <nav>
-        <ul class="menu-bar">
-            <li><a href="index.html">Home</a></li>
-            <li><a href="about.html">About</a></li>
-            <li><a href="privacy.html">Privacy</a></li>
-            <li><a href="terms.html">Terms</a></li>
-        </ul>
-    </nav>
+<body class="bg-white dark:bg-gray-900 transition-colors duration-300">
+  <nav class="flex justify-between items-center p-5 bg-gray-100 dark:bg-gray-800">
+    <a href="index.html" class="text-xl font-semibold text-blue-600 dark:text-blue-400">JennGen</a>
+    <div>
+      <a href="index.html" class="px-4 py-2 text-blue-600 dark:text-blue-400">Home</a>
+      <a href="about.html" class="px-4 py-2 text-blue-600 dark:text-blue-400">About</a>
+      <a href="privacy.html" class="px-4 py-2 text-blue-600 dark:text-blue-400">Privacy</a>
+      <a href="terms.html" class="px-4 py-2 text-blue-600 dark:text-blue-400">Terms</a>
+    </div>
+  </nav>
 
-    <main class="terms-content">
-        <h2>Terms of Service</h2>
-        <p>Welcome to JennGen! By accessing our website and using our services, you agree to be bound by the following terms and conditions. Please read them carefully.</p>
-        <h3>Usage License</h3>
-        <p>Subject to your compliance with these terms, JennGen grants you a non-exclusive, non-transferable, revocable license to use the website and its services for your personal and non-commercial use.</p>
-        <h3>Content Ownership</h3>
-        <p>All content provided on JennGen, including text, graphics, logos, and software, is the property of JennGen or its content suppliers and protected by intellectual property laws.</p>
-        <h3>Disclaimers</h3>
-        <p>JennGen is provided "as is" without any warranties, expressed or implied. We do not guarantee that the website will be error-free or uninterrupted.</p>
-        <h3>Limitation of Liability</h3>
-        <p>In no event shall JennGen be liable for any indirect, incidental, special, or consequential damages arising out of or in connection with your use of the website or services.</p>
-        <h3>Changes to Terms</h3>
-        <p>We reserve the right to modify these terms at any time. Your continued use of the website after such changes indicates your acceptance of the new terms.</p>
-    </main>
+  <main class="p-8">
+    <h1 class="text-3xl font-bold mb-4">Terms of Service</h1>
+    <section>
+      <p>Welcome to JennGen!</p>
+      <p>By accessing our website, you agree to these terms of service. Please read them carefully.</p>
+      <h2 class="text-2xl font-semibold mt-6 mb-4">Usage License</h2>
+      <p>Permission is granted to temporarily download one copy of JennGen for personal, non-commercial transitory viewing only.</p>
+      <h2 class="text-2xl font-semibold mt-6 mb-4">Disclaimer</h2>
+      <p>The materials on JennGen's website are provided on an 'as is' basis. JennGen makes no warranties, expressed or implied.</p>
+      <h2 class="text-2xl font-semibold mt-6 mb-4">Limitations</h2>
+      <p>In no event shall JennGen or its suppliers be liable for any damages arising out of the use or inability to use the materials on JennGen's website.</p>
+      <h2 class="text-2xl font-semibold mt-6 mb-4">Governing Law</h2>
+      <p>Any claim relating to JennGen's website shall be governed by the laws of the website owner's jurisdiction without regard to its conflict of law provisions.</p>
+    </section>
+  </main>
 
-    <footer>
-        <ul class="footer-links">
-            <li><a href="index.html">Home</a></li>
-            <li><a href="about.html">About</a></li>
-            <li><a href="privacy.html">Privacy</a></li>
-            <li><a href="terms.html">Terms</a></li>
-        </ul>
-        <p>&copy; 2023 Paul Thrasher</p>
-    </footer>
+  <footer class="text-center p-5 bg-gray-100 dark:bg-gray-800 mt-10">
+    <p>&copy; 2023 Paul Thrasher</p>
+    <div>
+      <a href="index.html" class="px-4 py-2 text-blue-600 dark:text-blue-400">Home</a>
+      <a href="about.html" class="px-4 py-2 text-blue-600 dark:text-blue-400">About</a>
+      <a href="privacy.html" class="px-4 py-2 text-blue-600 dark:text-blue-400">Privacy</a>
+      <a href="terms.html" class="px-4 py-2 text-blue-600 dark:text-blue-400">Terms</a>
+    </div>
+  </footer>
+
+  <script>
+    // Toggle dark mode based on user preference
+    const userPrefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    if (userPrefersDark) {
+      document.body.classList.add('dark-mode');
+    }
+  </script>
 </body>
 </html>

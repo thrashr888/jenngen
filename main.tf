@@ -6,19 +6,27 @@ resource "aws_s3_bucket" "jenngen_website" {
     index_document = "index.html"
     error_document = "error.html"
   }
+
+  policy = <<POLICY
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "PublicReadGetObject",
+      "Effect": "Allow",
+      "Principal": "*",
+      "Action": "s3:GetObject",
+      "Resource": "arn:aws:s3:::jenngen-website/*"
+    }
+  ]
+}
+POLICY
 }
 
 resource "aws_cloudfront_distribution" "jenngen_website_distribution" {
   origin {
     domain_name = aws_s3_bucket.jenngen_website.bucket_regional_domain_name
     origin_id   = "S3-jenngen-website"
-
-    custom_origin_config {
-      http_port                = 80
-      https_port               = 443
-      origin_protocol_policy   = "http-only"
-      origin_ssl_protocols     = ["TLSv1.2"]
-    }
   }
 
   enabled             = true

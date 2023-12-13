@@ -1,51 +1,55 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>About JennGen</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About JennGen</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-white dark:bg-gray-800">
-  <nav class="flex justify-between items-center p-4 bg-blue-500 text-white">
-    <a href="index.html" class="text-lg font-semibold">JennGen</a>
-    <div>
-      <a href="index.html" class="px-4 py-2 hover:bg-blue-700 transition-colors">Home</a>
-      <a href="about.html" class="px-4 py-2 hover:bg-blue-700 transition-colors">About</a>
-      <a href="download.html" class="px-4 py-2 hover:bg-blue-700 transition-colors">Download</a>
-      <a href="privacy.html" class="px-4 py-2 hover:bg-blue-700 transition-colors">Privacy</a>
-      <a href="terms.html" class="px-4 py-2 hover:bg-blue-700 transition-colors">Terms</a>
-    </div>
-  </nav>
+<body class="bg-white dark:bg-gray-800 transition duration-500">
+    <nav class="bg-blue-500 p-4 text-white">
+        <ul class="flex justify-center space-x-4">
+            <li><a href="index.html" class="hover:underline">Home</a></li>
+            <li><a href="about.html" class="hover:underline">About</a></li>
+            <li><a href="download.html" class="hover:underline">Download</a></li>
+            <li><a href="privacy.html" class="hover:underline">Privacy Policy</a></li>
+            <li><a href="terms.html" class="hover:underline">Terms of Service</a></li>
+        </ul>
+    </nav>
 
-  <main class="container mx-auto mt-8 px-4">
-    <h1 class="text-3xl font-bold text-blue-600 dark:text-blue-300 mb-4">About JennGen</h1>
-    <p class="text-gray-700 dark:text-gray-300 mb-6">
-      JennGen.ai is a website that uses AI to generate static content. It serves as a demonstration platform for the capabilities of the JennGen AI project, showcasing how artificial intelligence can revolutionize content creation.
-    </p>
-    <p class="text-gray-700 dark:text-gray-300 mb-6">
-      The JennGen project is designed to empower developers and content creators by automating the process of static site generation. With a focus on high-quality output and ease of use, JennGen is the perfect tool for creating professional-grade websites efficiently.
-    </p>
+    <main class="container mx-auto my-10 px-4">
+        <h1 class="text-3xl font-bold text-center text-blue-600 mb-6">About JennGen</h1>
 
-    <div class="grid grid-cols-2 gap-4 mb-8">
-      <img src="https://placekitten.com/200/300" alt="Cat Picture" class="rounded shadow">
-      <img src="https://placekitten.com/201/300" alt="Cat Picture" class="rounded shadow">
-      <img src="https://placekitten.com/202/300" alt="Cat Picture" class="rounded shadow">
-      <img src="https://placekitten.com/203/300" alt="Cat Picture" class="rounded shadow">
-    </div>
-  </main>
+        <p class="text-lg text-gray-700 dark:text-gray-300">
+            JennGen.ai is a website that uses AI to generate content. It is a test website for the JennGen AI project, designed to showcase the power of artificial intelligence in creating dynamic and engaging websites.
+        </p>
 
-  <footer class="bg-blue-500 text-white text-center p-4">
-    <a href="index.html" class="px-4 py-2 hover:bg-blue-700 transition-colors">Home</a>
-    <a href="about.html" class="px-4 py-2 hover:bg-blue-700 transition-colors">About</a>
-    <a href="download.html" class="px-4 py-2 hover:bg-blue-700 transition-colors">Download</a>
-    <a href="privacy.html" class="px-4 py-2 hover:bg-blue-700 transition-colors">Privacy</a>
-    <a href="terms.html" class="px-4 py-2 hover:bg-blue-700 transition-colors">Terms</a>
-    <p class="mt-2">Made with ❤️ by Paul Thrasher © 2023</p>
-  </footer>
+        <section class="my-8">
+            <h2 class="text-2xl font-semibold text-blue-500">Our Story</h2>
+            <p class="text-gray-600 dark:text-gray-400 mt-4">
+                JennGen is the culmination of cutting-edge AI technology and modern web design principles. It represents a breakthrough in automated content generation, allowing users to create stunning websites with minimal effort. Our mission is to democratize web development, making it accessible to everyone, regardless of their coding skills.
+            </p>
+        </section>
 
-  <script>
-    // Dark mode toggle functionality can be added here if required
-  </script>
+        <section class="grid grid-cols-2 gap-4 my-8">
+            <img src="https://placekitten.com/200/300" alt="Cat Picture" class="rounded">
+            <img src="https://placekitten.com/201/300" alt="Cat Picture" class="rounded">
+            <img src="https://placekitten.com/202/300" alt="Cat Picture" class="rounded">
+            <img src="https://placekitten.com/203/300" alt="Cat Picture" class="rounded">
+        </section>
+    </main>
+
+    <footer class="bg-blue-500 text-white p-4 text-center">
+        <a href="index.html" class="hover:underline">Home</a> |
+        <a href="about.html" class="hover:underline">About</a> |
+        <a href="download.html" class="hover:underline">Download</a> |
+        <a href="privacy.html" class="hover:underline">Privacy Policy</a> |
+        <a href="terms.html" class="hover:underline">Terms of Service</a>
+        <p class="text-sm mt-2">&copy; 2023 JennGen. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // Implement dark mode toggle if needed
+    </script>
 </body>
 </html>

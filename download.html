@@ -3,73 +3,70 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Download | JennGen</title>
+  <title>Download JennGen</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-blue-50 dark:bg-gray-800 text-gray-700 dark:text-gray-200">
-  <header class="text-center p-6 bg-blue-500 text-white">
-    <h1 class="text-4xl font-bold">Welcome to the JennGen website!</h1>
+<body class="bg-blue-50 dark:bg-gray-800 text-gray-900 dark:text-gray-200">
+  <header class="text-center p-6 bg-blue-600 text-white">
+    <h1>Welcome to the Jenn Gen website!</h1>
   </header>
 
-  <main class="container mx-auto my-8 p-8 bg-white dark:bg-gray-900 rounded shadow-lg">
+  <main class="container mx-auto px-4 py-8">
     <section>
-      <h2 class="text-3xl font-semibold mb-4">Getting Started</h2>
-      <article>
-        <h3 class="text-2xl font-semibold">Prerequisites</h3>
-        <ul class="list-disc list-inside">
-          <li><a href="https://nodejs.org/en/" class="text-blue-600 hover:underline">Node.js</a> - JavaScript runtime</li>
-          <li><a href="https://www.npmjs.com/" class="text-blue-600 hover:underline">npm</a> - Node.js package manager</li>
-        </ul>
-      </article>
+      <h2 class="text-2xl font-bold mb-4">Getting Started</h2>
+      <h3 class="text-xl font-semibold">Prerequisites</h3>
+      <ul class="list-disc pl-5 mb-4">
+        <li><a href="https://nodejs.org/en/" class="text-blue-500 hover:underline">Node.js</a> - JavaScript runtime</li>
+        <li><a href="https://www.npmjs.com/" class="text-blue-500 hover:underline">npm</a> - Node.js package manager</li>
+      </ul>
 
-      <article class="mt-6">
-        <h3 class="text-2xl font-semibold">Running</h3>
-        <ol class="list-decimal list-inside">
-          <li>Get your OpenAI key from <a href="https://beta.openai.com/" class="text-blue-600 hover:underline">https://beta.openai.com/</a></li>
-          <li>Use npx to get jenngen and render the current folder</li>
-        </ol>
-        <pre class="bg-gray-100 dark:bg-gray-800 p-4 rounded my-4">
+      <h3 class="text-xl font-semibold">Running</h3>
+      <ol class="list-decimal pl-5 mb-4">
+        <li>Get your OpenAI key from <a href="https://beta.openai.com/" class="text-blue-500 hover:underline">https://beta.openai.com/</a></li>
+        <li>Use npx to get jenngen and render the current folder</li>
+      </ol>
+      <pre class="bg-gray-100 dark:bg-gray-700 p-4 rounded">
 <code>export OPENAI_API_KEY=&lt;YOUR_API_KEY&gt;
-npx jenngen .</code>
-        </pre>
-        <p>Open <a href="http://localhost:3000" class="text-blue-600 hover:underline">http://localhost:3000</a> to view it in the browser.</p>
-      </article>
+npx jenngen .
+</code>
+      </pre>
+      <p>Open <a href="http://localhost:3000" class="text-blue-500 hover:underline">http://localhost:3000</a> to view it in the browser.</p>
     </section>
 
     <section class="mt-8">
-      <h2 class="text-3xl font-semibold mb-4">Built With</h2>
-      <ul class="list-disc list-inside">
-        <li><a href="https://openai.com/" class="text-blue-600 hover:underline">OpenAI</a> - OpenAI API</li>
+      <h2 class="text-2xl font-bold mb-4">Built With</h2>
+      <ul class="list-disc pl-5 mb-4">
+        <li><a href="https://openai.com/" class="text-blue-500 hover:underline">OpenAI</a> - OpenAI API</li>
       </ul>
     </section>
 
     <section class="mt-8">
-      <h2 class="text-3xl font-semibold mb-4">Authors</h2>
-      <p>**Paul Thrasher** - _Initial work_ - <a href="https://github.com/thrashr888" class="text-blue-600 hover:underline">thrashr888</a></p>
+      <h2 class="text-2xl font-bold mb-4">Authors</h2>
+      <p>- <strong>Paul Thrasher</strong> - Initial work - <a href="https://github.com/thrashr888" class="text-blue-500 hover:underline">thrashr888</a></p>
     </section>
 
     <section class="mt-8">
-      <h2 class="text-3xl font-semibold mb-4">License</h2>
-      <p>This project is licensed under the MIT License - see the <a href="LICENSE.md" class="text-blue-600 hover:underline">LICENSE.md</a> file for details</p>
+      <h2 class="text-2xl font-bold mb-4">License</h2>
+      <p>This project is licensed under the MIT License - see the <a href="LICENSE.md" class="text-blue-500 hover:underline">LICENSE.md</a> file for details</p>
     </section>
 
     <section class="mt-8">
-      <h2 class="text-3xl font-semibold mb-4">Acknowledgments</h2>
-      <ul class="list-disc list-inside">
+      <h2 class="text-2xl font-bold mb-4">Acknowledgments</h2>
+      <ul class="list-disc pl-5 mb-4">
         <li>Hat tip to anyone whose code was used</li>
         <li>Named after my wife, Jenn</li>
       </ul>
     </section>
   </main>
 
-  <footer class="bg-gray-200 dark:bg-gray-700 text-center p-6">
-    <p>&copy; 2023 JennGen. All rights reserved.</p>
+  <footer class="bg-blue-700 text-white text-center p-4">
     <nav>
-      <a href="index.html" class="text-blue-600 hover:underline">Home</a> |
-      <a href="about.html" class="text-blue-600 hover:underline">About</a> |
-      <a href="privacy.html" class="text-blue-600 hover:underline">Privacy Policy</a> |
-      <a href="terms.html" class="text-blue-600 hover:underline">Terms &amp; Conditions</a>
+      <a href="index.html" class="hover:underline">Home</a> |
+      <a href="about.html" class="hover:underline">About</a> |
+      <a href="privacy.html" class="hover:underline">Privacy Policy</a> |
+      <a href="terms.html" class="hover:underline">Terms & Conditions</a>
     </nav>
   </footer>
+
 </body>
 </html>
