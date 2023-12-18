@@ -1,0 +1,9 @@
+- an app called api-server
+- t3-micro instance
+- ubuntu latest
+- security group that allows port 80, 22, 443
+- load balancer
+- auto scaling group
+- launch configuration
+- VPC is an input variable
+- subnet is an input variable

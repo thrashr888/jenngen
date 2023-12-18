@@ -1,0 +1,6 @@
+- terraform aws s3 bucket
+- "jenngen-website" bucket name
+- bucket has public website settings
+- public acl policy
+- uses SSL
+- with cloudfront distribution
