@@ -1,4 +1,4 @@
-This code is building infrastructure for a basic app backend, using Terraform and AWS. It should incorporate best practices, scale easily, and be highly secure.
+This code is building infrastructure for a basic app backend, using HashiCorp Terraform, HashiCorp Sentinel and AWS. It should incorporate best practices, scale easily, and be highly secure.
 
 Author's name: Paul Thrasher
 Domain name: jenngen.ai

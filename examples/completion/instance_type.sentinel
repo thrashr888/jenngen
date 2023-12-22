@@ -1,0 +1,40 @@
+# Restricting instance types for
+# Development and testing
+
+# This Policy uses tfplan/v2 as the data source
+import "tfplan/v2" as tfplan
+import "strings"
+
+# Allowed instance types for testing and development
+allowed_instance_types = ["t2.micro", "t2.medium"]
+
+# Checking Mandatory Environment Tags
+dev_environment_tags = ["dev", "test"]
+
+# Filtering all of 'aws_instance' resources from the plan file
+ec2_instances = filter tfplan.resource_changes as _, resource {
+	resource.mode == "managed" and
+		resource.type == "aws_instance" and
+		(resource.change.actions contains "create" or resource.change.actions == ["update"])
+}
+
+# Checking if the Environment tag is labled as dev or test
+is_dev_environment = rule {
+	all ec2_instances as _, instances {
+		any instances.change.after.tags as key, value {
+			strings.to_lower(value) in dev_environment_tags
+		}
+	}
+}
+
+# Restrict the instance types for the development and testing
+restrict_instance_type_for_dev_test = rule when is_dev_environment {
+	all ec2_instances as _, instances {
+		instances.change.after.instance_type in allowed_instance_types
+	}
+}
+
+# Main Rule
+main = rule {
+	restrict_instance_type_for_dev_test
+}

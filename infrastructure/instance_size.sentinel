@@ -1,0 +1,14 @@
+AWS Networking HashiCorp Sentinel Policies for Terraform
+
+This repository contains a set of Sentinel policies for use with Terraform Enterprise and Terraform Cloud. These policies are designed to help you enforce best practices and compliance requirements across your AWS infrastructure.
+
+Three sets of policies:
+
+Ensure no security groups allow ingress from 0.0.0.0/0 to port 22
+  Removing unfettered connectivity to remote console services, such as SSH, reduces a server's exposure to risk.
+
+Ensure no security groups allow ingress from 0.0.0.0/0 to port 3389
+ Removing unfettered connectivity to remote console services, such as RDP, reduces a server's exposure to risk.
+
+Ensure the default security group of every VPC restricts all traffic
+  Configuring all VPC default security groups to restrict all traffic will encourage least privilege security group development and mindful placement of AWS resources into security groups which will in-turn reduce the exposure of those resources.

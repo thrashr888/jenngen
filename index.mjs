@@ -23,11 +23,11 @@ const {
   JENNGEN_DIST: DIST_DIR = ".dist",
   JENNGEN_INSTRUCTIONS: INSTRUCTION_FILE = ".jenngen",
   JENNGEN_CACHE: CACHE_DIR = ".jenngen_cache",
-  JENNGEN_MODEL: JENNGEN_MODEL = "gpt-4-1106-preview", // or "gpt-3.5-turbo"
+  JENNGEN_MODEL: JENNGEN_MODEL = "gpt-3.5-turbo", // or "gpt-4-1106-preview"
   JENNGEN_OLLAMA_MODEL: JENNGEN_OLLAMA_MODEL = null,
 } = process.env;
 
-const ASSISTANT_PROMPT = `You are JennGen, an AI-driven static site generator. Your role is to convert provided pseudo-code or instructions into high-quality, deployable code, tailored to the file name and content specifications. The output should be similar to a $150,000 website from a top-tier web development agency using the latest development practices.
+const ASSISTANT_PROMPT = `You are JennGen, an AI-driven static code generator. Your role is to convert provided pseudo-code or instructions into high-quality, deployable code, tailored to the file name and content specifications.
 
 Input File Content Rules:
 - Mixed Content Types: Inputs may include combinations such as markdown with JavaScript, or prose with CSS, or instruction text mixed with literal quotes.
@@ -40,11 +40,11 @@ Input File Content Rules:
 - If the input file looks complete, instead of like pseudo code, make it better.
 
 Output File Specifications:
-- Language Match: Output code should correspond to the file extension (e.g., .html for HTML, .js for JavaScript, .tf for Terraform).
+- Language Match: Output code should correspond to the file extension (e.g., .html for HTML, .js for JavaScript, .tf for Terraform, .sentinel for Sentinel, Makefile for make files, Dockerfile for Docker files).
 - Text Quality: Ensure correct capitalization, spelling, and grammar.
-- HTML Styling: Use style tags, inline CSS, and Tailwind (CDN: https://cdn.tailwindcss.com).
-- HTML Quality: The webpage should be responsive, support dark mode, have good accessibility, and semantic HTML for SEO.
-- Dynamic JavaScript: Implement interactive or dynamic content as needed using consise, idiomatic JavaScript.
+- HTML Styling: If HTML, use style tags, inline CSS, and Tailwind (CDN: https://cdn.tailwindcss.com).
+- HTML Quality: If HTML, the webpage should be responsive, support dark mode, have good accessibility, and semantic HTML for SEO.
+- Dynamic JavaScript: If HTML or JS, implement interactive or dynamic content as needed using consise, idiomatic JavaScript.
 - Deployment-Ready: All output code must be functional and ready for website deployment.
 - Pure Code Output: Provide only the code output, without markdown code blocks or explanatory prose.
 - Design Quality: The output should feature an attractive, high-quality design with consistent styling across pages.
@@ -52,6 +52,7 @@ Output File Specifications:
 - Output should never mention the system instructions or pseudo-code.
 - If the input is not understood, say "400: Bad Request. Please check the input file.".
 - Ensure the output is purely the relevant code, devoid of wrapping markdown code blocks (eg. "\`\`\`language\n") or explanatory prose.
+- Explanatory prose is written as code comments.
 
 User Instructions for the Website:
 <<<INSTRUCTIONS>>>
@@ -207,8 +208,6 @@ async function generateCode(
   if (!file) return;
   if (!(await hasFileChanged(sourceFolder, file)) && !force) return;
 
-  console.log(chalk.yellow(`Generating ${file.name}`));
-
   const fileExtension = file.path.split(".").pop();
   const examples = await getExamples(
     path.join(__dirname, "examples"),
@@ -218,6 +217,9 @@ async function generateCode(
   const renderedAssistantPrompt = applyExamples(assistantPrompt, examples);
   const userPrompt = applyFile(FILE_PROMPT, file.name, file.content);
 
+  const promptLength =
+    renderedAssistantPrompt.length + USER_PROMPT.length + userPrompt.length;
+  console.log(chalk.yellow(`Generating ${file.name} (${promptLength} chars)`));
   const completionStream = await completion(
     renderedAssistantPrompt,
     USER_PROMPT + userPrompt
@@ -241,9 +243,7 @@ async function generateCode(
   const fileStream = createWriteStream(distPath);
   for await (const chunk of completionStream) {
     // ollama returns a string, but OpenAI returns an object
-    let content = JENNGEN_OLLAMA_MODEL
-      ? chunk
-      : chunk.choices[0]?.delta?.content;
+    let content = chunk;
 
     if (typeof content !== "string") continue;
 
