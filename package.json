@@ -1,6 +1,6 @@
 {
   "name": "jenngen",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "AI static site generator: $ npx jenngen .",
   "main": "index.mjs",
   "scripts": {
