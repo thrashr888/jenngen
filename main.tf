@@ -26,7 +26,7 @@ resource "aws_s3_bucket" "jenngen-website" {
 resource "aws_cloudfront_distribution" "jenngen-website" {
   origin {
     domain_name = aws_s3_bucket.jenngen-website.bucket_regional_domain_name
-    origin_id   = aws_s3_bucket.jenngen-website.id
+    origin_id   = "jenngen-website"
   }
   enabled             = true
   is_ipv6_enabled     = true
@@ -35,7 +35,7 @@ resource "aws_cloudfront_distribution" "jenngen-website" {
   default_cache_behavior {
     allowed_methods  = ["GET", "HEAD", "OPTIONS"]
     cached_methods   = ["GET", "HEAD", "OPTIONS"]
-    target_origin_id = aws_s3_bucket.jenngen-website.id
+    target_origin_id = "jenngen-website"
 
     forwarded_values {
       query_string = false
