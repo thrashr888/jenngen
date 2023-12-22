@@ -1,0 +1,67 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Welcome to the JennGen website!</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Add your custom styles here */
+  </style>
+</head>
+
+<body>
+  <section class="bg-blue-500 text-white py-20">
+    <div class="container mx-auto">
+      <h1 class="text-4xl font-bold mb-8">Welcome to the JennGen website!</h1>
+      <p>{title}</p>
+    </div>
+  </section>
+
+  <section class="py-20">
+    <div class="container mx-auto">
+      <h2 class="text-2xl font-bold mb-8">Getting Started</h2>
+      <p>Using JennGen is easy. Just follow these steps:</p>
+      <ol class="list-decimal ml-8">
+        <li>Get your OpenAI key from <a href="https://platform.openai.com/api-keys">https://platform.openai.com/api-keys</a></li>
+        <li>Use npx to get jenngen and render the current folder: <code>npx jenngen .</code></li>
+        <li>Open <a href="http://localhost:3000">http://localhost:3000</a> to view it in the browser.</li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="py-20">
+    <div class="container mx-auto">
+      <h2 class="text-2xl font-bold mb-8">More About JennGen</h2>
+      <p>[insert more of a product story here]</p>
+    </div>
+  </section>
+
+  <section class="py-20">
+    <div class="container mx-auto">
+      <img src="https://placekitten.com/400/300" alt="Cat Picture" class="mx-auto">
+    </div>
+  </section>
+
+  <section class="py-20">
+    <div class="container mx-auto">
+      <p><time datetime="{current}"></time></p>
+      <span class="animate-pulse">✨</span>
+      <span class="animate-pulse">✨</span>
+      <span class="animate-pulse">✨</span>
+    </div>
+  </section>
+
+  <footer class="bg-gray-200 py-10">
+    <div class="container mx-auto">
+      <ul class="flex justify-center space-x-8">
+        <li><a href="/about.html">About</a></li>
+        <li><a href="/privacy.html">Privacy</a></li>
+        <li><a href="/terms.html">Terms</a></li>
+      </ul>
+    </div>
+  </footer>
+</body>
+
+</html>
