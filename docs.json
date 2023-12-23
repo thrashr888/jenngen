@@ -1,0 +1,6 @@
+[
+  ["https://github.com/hashicorp/packer.git", "website/content", "hcl"],
+  ["https://github.com/hashicorp/sentinel.git", "website/content", "sentinel"],
+  ["https://github.com/hashicorp/terraform.git", "website/docs", "tf"],
+  ["https://github.com/hashicorp/tutorials.git", "content/tutorials"]
+]

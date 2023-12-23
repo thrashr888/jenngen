@@ -61,8 +61,10 @@ The `.jenngen` file is a plaintext file that contains instructions for JennGen. 
 npx jenngen <source folder> [options]
 ```
 
-- `--watch` - watch for changes and rebuild
+- `--docs` - Experimental: use RAG to generate docs from markdown files
+- `--force` - always generate files, even if they haven't changed
 - `--server` - start a server to serve the output folder
+- `--watch` - watch for changes and rebuild
 
 ## Environment variables
 
@@ -137,6 +139,8 @@ See the [`./website`](./website) folder and https://thrashr888.github.io/jenngen
 ## TODO
 
 - [ ] Add quality examples for more languages and file formats.
+- [x] Add a way to use a local model with Ollama.
+- [x] Add RAG with local markdown docs.
 - [x] I'm pretty sure there are bugs with npx and the JennGen example folders because the cwd confuses me.
 - [ ] Add a way to serve the output folder without watching. I think we're double-watching and reloading.
 - [x] Use JennGen to generate a website for its GitHub Pages.

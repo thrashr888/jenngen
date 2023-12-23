@@ -8,23 +8,26 @@ import { createWriteStream, watch } from "fs";
 import fs from "fs/promises";
 import livereload from "livereload";
 import { OpenAIChatMessage, ollama, openai, streamText } from "modelfusion";
+import os from "os";
 import path from "path";
 import { fileURLToPath } from "url";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
+import { loadDocs, searchDocs, searchToPrompts } from "./docs.mjs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Environment variables and constants
 const {
   JENNGEN_LIVERELOAD_PORT: LIVERELOAD_PORT = 35729,
   JENNGEN_PORT: SERVER_PORT = 3000,
   JENNGEN_DIST: DIST_DIR = ".dist",
   JENNGEN_INSTRUCTIONS: INSTRUCTION_FILE = ".jenngen",
   JENNGEN_CACHE: CACHE_DIR = ".jenngen_cache",
+  JENNGEN_DOCS: DOCS_DIR = "docs",
   JENNGEN_MODEL: JENNGEN_MODEL = "gpt-3.5-turbo", // or "gpt-4-1106-preview"
   JENNGEN_OLLAMA_MODEL: JENNGEN_OLLAMA_MODEL = null,
+  JENNGEN_DOCS_MAX_LENGTH: DOCS_MAX_LENGTH = 8000,
 } = process.env;
 
 const ASSISTANT_PROMPT = `You are JennGen, an AI-driven static code generator. Your role is to convert provided pseudo-code or instructions into high-quality, deployable code, tailored to the file name and content specifications.
@@ -52,7 +55,7 @@ Output File Specifications:
 - Output should never mention the system instructions or pseudo-code.
 - If the input is not understood, say "400: Bad Request. Please check the input file.".
 - Ensure the output is purely the relevant code, devoid of wrapping markdown code blocks (eg. "\`\`\`language\n") or explanatory prose.
-- Explanatory prose is written as code comments.
+- Explanatory prose is written as comments in the code.
 
 User Instructions for the Website:
 <<<INSTRUCTIONS>>>
@@ -64,7 +67,10 @@ Pseudo-Code Input Examples:
 <<<INPUT>>>
 
 Real Code Output Examples:
-<<<OUTPUT>>>`;
+<<<OUTPUT>>>
+
+Official language documentation snippets:
+<<<DOCS>>>`;
 const USER_PROMPT = `Based on the provided pseudo-code, generate the corresponding code.\n`;
 const FILE_PROMPT = `FILE: <<<FILENAME>>>\nCONTENTS: <<<CONTENTS>>>`;
 
@@ -124,31 +130,6 @@ async function getFiles(folder) {
   return files.flat().filter(Boolean); // Flatten and filter out null values
 }
 
-async function completion(assistant, prompt) {
-  if (JENNGEN_OLLAMA_MODEL) {
-    return await streamText(
-      ollama
-        .CompletionTextGenerator({
-          model: JENNGEN_OLLAMA_MODEL,
-          temperature: 0.3,
-          top_p: 1,
-          system: assistant,
-        })
-        .withTextPrompt(),
-      prompt
-    );
-  }
-
-  return await streamText(
-    openai.ChatTextGenerator({
-      model: JENNGEN_MODEL,
-      temperature: 0.3,
-      top_p: 1,
-    }),
-    [OpenAIChatMessage.assistant(assistant), OpenAIChatMessage.user(prompt)]
-  );
-}
-
 // Get a tree of files and folders, their names and contents
 async function getExamples(folder, extension) {
   const files = await fs.readdir(folder, { withFileTypes: true });
@@ -182,11 +163,11 @@ function applyFile(prompt, filename, content) {
 // CONTENTS: [content goes here...]
 // FILENAME: about.html
 // CONTENTS: [content goes here...]
-function applyExamples(prompt, examples) {
+function applyExamples(prompt, examples, docs = []) {
   let inputs = [];
   let outputs = [];
   for (const example of examples) {
-    console.log(`Applying example ${example.path}`);
+    console.log(chalk.gray(`Applying example ${example.path}`));
     if (example.path.includes("examples/prompt")) {
       inputs.push(applyFile(FILE_PROMPT, example.path, example.content));
     } else if (example.path.includes("examples/completion")) {
@@ -195,7 +176,36 @@ function applyExamples(prompt, examples) {
   }
   return prompt
     .replace("<<<INPUT>>>", inputs.join("\n"))
-    .replace("<<<OUTPUT>>>", outputs.join("\n"));
+    .replace("<<<OUTPUT>>>", outputs.join("\n"))
+    .replace(
+      "<<<DOCS>>>",
+      docs ? docs.join("\n").slice(0, DOCS_MAX_LENGTH) : "None"
+    );
+}
+
+async function completion(assistant = "", prompt) {
+  if (JENNGEN_OLLAMA_MODEL) {
+    return await streamText(
+      ollama
+        .CompletionTextGenerator({
+          model: JENNGEN_OLLAMA_MODEL,
+          temperature: 0.3,
+          top_p: 1,
+          system: assistant,
+        })
+        .withTextPrompt(),
+      prompt
+    );
+  }
+
+  return await streamText(
+    openai.ChatTextGenerator({
+      model: JENNGEN_MODEL,
+      temperature: 0.3,
+      top_p: 1,
+    }),
+    [OpenAIChatMessage.assistant(assistant), OpenAIChatMessage.user(prompt)]
+  );
 }
 
 async function generateCode(
@@ -203,6 +213,7 @@ async function generateCode(
   assistantPrompt,
   file,
   liveReloadServer = null,
+  docs = null,
   force = false
 ) {
   if (!file) return;
@@ -214,12 +225,23 @@ async function generateCode(
     fileExtension
   );
 
-  const renderedAssistantPrompt = applyExamples(assistantPrompt, examples);
+  const searchResults = await searchDocs(docs, file.content, completion);
+  const searchPrompts = searchToPrompts(searchResults);
+
+  const renderedAssistantPrompt = applyExamples(
+    assistantPrompt,
+    examples,
+    searchPrompts
+  );
   const userPrompt = applyFile(FILE_PROMPT, file.name, file.content);
 
   const promptLength =
     renderedAssistantPrompt.length + USER_PROMPT.length + userPrompt.length;
-  console.log(chalk.yellow(`Generating ${file.name} (${promptLength} chars)`));
+  console.log(
+    chalk.yellow(
+      `Generating ${file.name} (${promptLength} chars + ${searchPrompts.length} docs)`
+    )
+  );
   const completionStream = await completion(
     renderedAssistantPrompt,
     USER_PROMPT + userPrompt
@@ -317,10 +339,10 @@ async function main() {
   const argv = yargs(hideBin(process.argv))
     .scriptName("jenngen")
     .usage("$0 <source folder> [args]")
-    .option("watch", {
-      alias: "w",
+    .option("docs", {
+      alias: "d",
       type: "boolean",
-      description: "Watch for file changes",
+      description: "Experimental: load docs from some repos",
     })
     .option("force", {
       alias: "f",
@@ -331,6 +353,11 @@ async function main() {
       alias: "s",
       type: "boolean",
       description: "Serve files with live reload",
+    })
+    .option("watch", {
+      alias: "w",
+      type: "boolean",
+      description: "Watch for file changes",
     })
     .option("help", {
       alias: "h",
@@ -350,6 +377,13 @@ async function main() {
   await fs.mkdir(cacheFolder, { recursive: true });
 
   console.log(chalk.magenta(`Source folder: ${sourceFolder}`));
+
+  let docs = [];
+  if (argv.docs) {
+    const docsFolder = path.join(os.tmpdir(), DOCS_DIR);
+    await fs.mkdir(docsFolder, { recursive: true });
+    docs = await loadDocs(docsFolder);
+  }
 
   // use instructions file if it exists
   let assistantPrompt = "";
@@ -375,14 +409,24 @@ async function main() {
     [, liveReloadServer] = await startServer(sourceFolder, argv.watch);
   }
 
-  await build(sourceFolder, assistantPrompt, argv.force);
+  await build(sourceFolder, assistantPrompt, docs, argv.force);
 
   if (argv.watch) {
-    await watchForChanges(sourceFolder, assistantPrompt, liveReloadServer);
+    await watchForChanges(
+      sourceFolder,
+      assistantPrompt,
+      docs,
+      liveReloadServer
+    );
   }
 }
 
-async function build(sourceFolder, assistantPrompt, force = false) {
+async function build(
+  sourceFolder,
+  assistantPrompt,
+  docs = null,
+  force = false
+) {
   const files = await getFiles(sourceFolder);
   assistantPrompt = assistantPrompt.replace(
     "<<<FILES>>>",
@@ -395,19 +439,19 @@ async function build(sourceFolder, assistantPrompt, force = false) {
   try {
     await Promise.all(
       files.map((file) =>
-        generateCode(sourceFolder, assistantPrompt, file, null, force)
+        generateCode(sourceFolder, assistantPrompt, file, null, docs, force)
       )
     );
+    console.log(chalk.green("Files generated."));
   } catch (err) {
-    console.error(chalk.red(`Generation failed`), err);
+    console.error(chalk.red(`Generation failed.`), err);
   }
-
-  console.log(chalk.green("Files generated"));
 }
 
 async function watchForChanges(
   sourceFolder,
   assistantPrompt,
+  docs = null,
   liveReloadServer = null
 ) {
   console.log(chalk.green("Watching for changes..."));
@@ -425,9 +469,15 @@ async function watchForChanges(
       const content = await fs.readFile(filePath, "utf-8");
       const file = { name: filename, path: filePath, content };
 
-      await generateCode(sourceFolder, assistantPrompt, file, liveReloadServer);
+      await generateCode(
+        sourceFolder,
+        assistantPrompt,
+        file,
+        docs,
+        liveReloadServer
+      );
     } catch (err) {
-      console.error(chalk.red(`Generation failed ${filename}: ${err}`));
+      console.error(chalk.red(`Generation failed ${filename}`), err);
     }
   });
 }
