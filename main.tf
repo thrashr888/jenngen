@@ -2,7 +2,7 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 5.0"
+      version = "~> 3.0"
     }
   }
 }
@@ -16,18 +16,20 @@ provider "aws" {
 resource "aws_s3_bucket" "jenngen-website" {
   bucket = "jenngen-website"
   acl    = "public-read"
+
   website {
     index_document = "index.html"
     error_document = "error.html"
   }
 }
 
-# Create a CloudFront distribution for the website
-resource "aws_cloudfront_distribution" "jenngen-website" {
+# Create a CloudFront distribution
+resource "aws_cloudfront_distribution" "jenngen-website-cdn" {
   origin {
     domain_name = aws_s3_bucket.jenngen-website.bucket_regional_domain_name
-    origin_id   = "jenngen-website"
+    origin_id   = aws_s3_bucket.jenngen-website.id
   }
+
   enabled             = true
   is_ipv6_enabled     = true
   default_root_object = "index.html"
@@ -35,7 +37,7 @@ resource "aws_cloudfront_distribution" "jenngen-website" {
   default_cache_behavior {
     allowed_methods  = ["GET", "HEAD", "OPTIONS"]
     cached_methods   = ["GET", "HEAD", "OPTIONS"]
-    target_origin_id = "jenngen-website"
+    target_origin_id = aws_s3_bucket.jenngen-website.id
 
     forwarded_values {
       query_string = false

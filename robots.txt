@@ -23,3 +23,10 @@ Pseudo-Code Input Examples:
 
 
 Real Code Output Examples:
+
+
+Official language documentation snippets:
+
+
+FILE: robots.txt
+CONTENTS: allow all except /private and .jenngen
