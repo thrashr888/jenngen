@@ -1,72 +1,67 @@
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="en">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Welcome to the JennGen website!</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to the JennGen website!</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Add your custom CSS styles here */
+    </style>
 </head>
+
 <body>
-  <h1 class="text-3xl font-bold underline">
-    Welcome to the JennGen website!
-  </h1>
-
-  <!-- Beautiful hero section explaining the product -->
-  <section class="bg-blue-500 text-white py-10">
-    <div class="container mx-auto">
-      <h2 class="text-2xl font-bold mb-4">Introducing JennGen</h2>
-      <p class="text-lg">JennGen is an AI static site generator that helps you create beautiful and responsive websites with ease. With JennGen, you can focus on your content while we take care of the code.</p>
+    <div class="bg-blue-200 text-center py-8">
+        <h1 class="text-4xl font-bold">Welcome to the JennGen website!</h1>
+        <p class="text-lg">JennGen is an AI static site generator that simplifies website development.</p>
+        <p class="text-lg">Create beautiful websites effortlessly with JennGen.</p>
     </div>
-  </section>
 
-  <!-- Insert high quality marketing content here -->
-
-  <section class="py-10">
-    <div class="container mx-auto">
-      <h2 class="text-2xl font-bold mb-4">Getting Started</h2>
-      <ol class="list-decimal pl-6">
-        <li>Get your OpenAI key from <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener noreferrer">https://platform.openai.com/api-keys</a></li>
-        <li>Use npx to get jenngen and render the current folder: <code>npx jenngen .</code></li>
-        <li>Open <a href="http://localhost:3000" target="_blank" rel="noopener noreferrer">http://localhost:3000</a> to view it in the browser.</li>
-      </ol>
+    <div class="container mx-auto my-8">
+        <h2 class="text-2xl font-bold">Getting Started</h2>
+        <ol class="list-decimal list-inside">
+            <li>Get your OpenAI key from <a href="https://platform.openai.com/api-keys" target="_blank">OpenAI API Keys</a></li>
+            <li>Use npx to get jenngen and render the current folder: <code>npx jenngen .</code></li>
+            <li>Open <a href="http://localhost:3000" target="_blank">http://localhost:3000</a> to view it in the browser.</li>
+        </ol>
     </div>
-  </section>
 
-  <!-- Insert more of a product story here -->
-
-  <!-- Insert a centered cat picture here from placekitten.com -->
-  <div class="flex justify-center">
-    <img src="https://placekitten.com/400/300" alt="Cat Picture" class="rounded-lg">
-  </div>
-
-  <!-- Dynamic content: current time -->
-  <div class="text-center mt-10">
-    <p>The current time is: <span id="current-time"></span></p>
-  </div>
-
-  <!-- Dynamic content: animated sparkles -->
-  <div class="text-center mt-10">
-    <span class="animate-pulse text-4xl">&#x2728;&#x2728;&#x2728;</span>
-  </div>
-
-  <!-- Footer with links to about, privacy, and terms -->
-  <footer class="bg-gray-200 py-4">
-    <div class="container mx-auto">
-      <ul class="flex justify-center space-x-4">
-        <li><a href="about.html">About</a></li>
-        <li><a href="privacy.html">Privacy</a></li>
-        <li><a href="terms.html">Terms</a></li>
-      </ul>
+    <div class="container mx-auto my-8">
+        <p>... more of the amazing JennGen product story here ...</p>
     </div>
-  </footer>
 
-  <!-- JavaScript code to display current time -->
-  <script>
-    const currentTimeElement = document.getElementById('current-time');
-    setInterval(() => {
-      const currentTime = new Date().toLocaleTimeString();
-      currentTimeElement.textContent = currentTime;
-    }, 1000);
-  </script>
+    <div class="container mx-auto my-8 text-center">
+        <img src="https://placekitten.com/400/300" alt="Cat Picture" class="rounded-lg">
+    </div>
+
+    <div class="container mx-auto my-8 text-center">
+        <time id="current-time"></time>
+        <div id="sparkles-container"></div>
+    </div>
+
+    <footer class="bg-gray-800 text-white py-4 text-center">
+        <a href="about.html" class="mx-4">About</a>
+        <a href="privacy.html" class="mx-4">Privacy</a>
+        <a href="terms.html" class="mx-4">Terms</a>
+    </footer>
+
+    <script>
+        // Dynamic current time
+        const currentTime = document.getElementById('current-time');
+        setInterval(() => {
+            currentTime.textContent = new Date().toLocaleTimeString();
+        }, 1000);
+
+        // Sparkles animation
+        const sparklesContainer = document.getElementById('sparkles-container');
+        const sparklesCount = 3;
+        for (let i = 0; i < sparklesCount; i++) {
+            const sparkle = document.createElement('div');
+            sparkle.classList.add('sparkle');
+            sparklesContainer.appendChild(sparkle);
+        }
+    </script>
 </body>
+
 </html>

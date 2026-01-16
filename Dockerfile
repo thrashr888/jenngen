@@ -1,19 +1,13 @@
-FROM node:latest
+FROM node
 
-ENV OPENAI_API_KEY={OPENAI_API_KEY}
-
-WORKDIR /app
+ENV OPENAI_API_KEY={insert your OpenAI API key here}
 
 COPY package.json .
-RUN npm install
 
-COPY . .
+COPY . /usr/share/nginx/html
 
 RUN npx jenngen .
 
-FROM nginx:latest
-COPY --from=0 /app/dist /usr/share/nginx/html
+CMD ["nginx", "-g", "daemon off;"]
 
 EXPOSE 80
-
-CMD ["nginx", "-g", "daemon off;"]
